@@ -1,1 +1,13 @@
- 
+version: '3.9'
+
+services:
+  bdres:
+    image: postgres
+    restart: always
+
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: bdres
+    ports:
+      - "5432:5432"

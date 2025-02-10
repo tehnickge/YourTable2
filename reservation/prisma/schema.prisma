@@ -12,3 +12,151 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model RestaurantPhoto {
+  id            Int        @id @default(autoincrement())
+  title         String?
+  photo         Bytes?
+  restuarant    Restaurant @relation(fields: [restaurant_fk], references: [id], onDelete: Cascade)
+  restaurant_fk Int
+}
+
+model Restaurant {
+  id                 Int                 @id @default(autoincrement())
+  title              String
+  uniqueKey          String
+  createdAt          DateTime            @default(now())
+  info               String?
+  shortInfo          String?
+  restaurantChain    RestaurantChain     @relation(fields: [restaurantChain_fk], references: [id])
+  restaurantChain_fk Int
+  photos             RestaurantPhoto[]
+  maxHoursToRent     Decimal             @default(1)
+  menus              Menu[]
+  address            Address?
+  workShadules       WorkShadule[]
+  kitchens           RestaurantKitchen[]
+  lastUpdate         DateTime            @default(now())
+  reviews            Review[]
+  zones              Zone[]
+  rents              Rent[]
+}
+
+model Rent {
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  timeStart     DateTime
+  timeEnd       DateTime
+  user          User       @relation(fields: [user_fk], references: [id])
+  user_fk       Int
+  rentStatus    String
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  restaurant_fk Int
+  amountPeople  Int
+  slot_fk       Int
+  slot          Slot       @relation(fields: [slot_fk], references: [id])
+}
+
+model Slot {
+  id             Int    @id @default(autoincrement())
+  number         String
+  maxCountPeople Int
+  zone_fk        Int
+  zone           Zone   @relation(fields: [zone_fk], references: [id])
+  rents          Rent[]
+}
+
+model Zone {
+  id            Int        @id @default(autoincrement())
+  title         String?
+  description   String?
+  color         String?
+  restaurant_fk Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  slots         Slot[]
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  password    String
+  photo       Bytes
+  type        String
+  createdAt   DateTime @default(now())
+  historyRest Int[]
+  wishList    Int[]
+  phoneNumber String   @unique
+  reviews     Review[]
+  rents       Rent[]
+}
+
+model Review {
+  id            Int        @id @default(autoincrement())
+  restaurant_fk Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  user_fk       Int
+  user          User       @relation(fields: [user_fk], references: [id])
+}
+
+model Kitchen {
+  id          Int                 @id @default(autoincrement())
+  title       String              @unique
+  restaurants RestaurantKitchen[]
+}
+
+model RestaurantKitchen {
+  id            Int        @id @default(autoincrement())
+  kitchen_fk    Int
+  kitchen       Kitchen    @relation(fields: [kitchen_fk], references: [id])
+  restaurant_fk Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+}
+
+model WorkShadule {
+  id            Int        @id @default(autoincrement())
+  timeBegin     DateTime
+  timeEnd       DateTime
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  restaurant_fk Int
+  day_fk        Int
+  day           Day        @relation(fields: [day_fk], references: [id])
+}
+
+model Day {
+  id           Int           @id @default(autoincrement())
+  title        String
+  workShadules WorkShadule[]
+}
+
+model Address {
+  id            Int        @id @default(autoincrement())
+  city          String
+  fullAddress   String
+  coordinate    String?
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  restaurant_fk Int        @unique
+  timezone      String?
+}
+
+model Menu {
+  id            Int        @id @default(autoincrement())
+  titleDish     String?
+  photo         Bytes
+  price         Decimal?
+  restaurant_fk Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+}
+
+model RestaurantChain {
+  id          Int          @id @default(autoincrement())
+  title       String
+  restaurants Restaurant[]
+  company_fk  Int
+  company     Company      @relation(fields: [company_fk], references: [id])
+}
+
+model Company {
+  id               Int               @id @default(autoincrement())
+  title            String
+  restaurantChains RestaurantChain[]
+}
