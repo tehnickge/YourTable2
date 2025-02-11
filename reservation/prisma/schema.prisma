@@ -36,11 +36,12 @@ model Restaurant {
   address            Address?
   workShadules       WorkShadule[]
   kitchens           RestaurantKitchen[]
-  averageBill        Int
+  averageBill        Int?
   lastUpdate         DateTime            @default(now())
   reviews            Review[]
   zones              Zone[]
   rents              Rent[]
+  rating             Decimal?
 }
 
 model Rent {
@@ -97,6 +98,8 @@ model Review {
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   user_fk       Int
   user          User       @relation(fields: [user_fk], references: [id])
+  comment       String
+  rating        Int
 }
 
 model Kitchen {
