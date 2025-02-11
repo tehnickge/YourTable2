@@ -36,6 +36,7 @@ model Restaurant {
   address            Address?
   workShadules       WorkShadule[]
   kitchens           RestaurantKitchen[]
+  averageBill        Int
   lastUpdate         DateTime            @default(now())
   reviews            Review[]
   zones              Zone[]
