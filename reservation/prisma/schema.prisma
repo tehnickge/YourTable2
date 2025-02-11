@@ -62,6 +62,7 @@ model Rent {
 model Slot {
   id             Int    @id @default(autoincrement())
   number         String
+  description    String
   maxCountPeople Int
   zone_fk        Int
   zone           Zone   @relation(fields: [zone_fk], references: [id])
