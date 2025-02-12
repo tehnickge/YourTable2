@@ -83,13 +83,13 @@ model User {
   id          Int      @id @default(autoincrement())
   username    String   @unique
   password    String
-  photo       Bytes
+  photo       Bytes?
   type        String
   email       String   @unique
   createdAt   DateTime @default(now())
   historyRest Int[]
   wishList    Int[]
-  phoneNumber String   @unique
+  phoneNumber String?   @unique
   reviews     Review[]
   rents       Rent[]
 }
