@@ -1,20 +1,20 @@
 export interface IUser {
-  id: number
-  username: String;
-  email: String;
-  password: String;
+  id: number;
+  username: string;
+  email: string;
+  password: string;
   photo?: Uint8Array;
   createdAt: Date;
-  type: String;
+  type: string;
   historyRests: number[];
   wishList: number[];
-  phoneNumber?: String;
+  phoneNumber?: string;
 }
 
-export interface IUserValidSchema {
+export interface IUserValidSchemaRegistration {
   id?: number;
-  username: String;
-  email: String;
-  role?: String;
-  password: String;
+  username: string;
+  email: string;
+  password: string;
+  phoneNumber?: string;
 }

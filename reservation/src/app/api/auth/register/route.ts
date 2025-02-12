@@ -2,21 +2,27 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import * as Yup from "yup";
-import { IUserValidSchema } from "@/types/user";
-import prisma from "@/lib/prisma"
+import { IUser, IUserValidSchemaRegistration } from "@/types/user";
+import prisma from "@/lib/prisma";
+import { ERROR_MESSAGES, HTTP_STATUS } from "@/types/HTTPStauts";
 
 // Схема валидации пользователя
-const userSchema: Yup.Schema<IUserValidSchema> = Yup.object().shape({
-  username: Yup.string()
-    .required("Name is required")
-    .min(4, "Name must be at least 4 characters")
-    .max(15, "Name must be less than 16 characters"),
-  email: Yup.string().required("Email is required").email("Invalid email"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(4, "Password must be at least 4 characters")
-    .max(15, "Password must be less than 16 characters"),
-});
+const userSchema: Yup.Schema<IUserValidSchemaRegistration> = Yup.object().shape(
+  {
+    username: Yup.string()
+      .required("Name is required")
+      .min(4, "Name must be at least 4 characters")
+      .max(15, "Name must be less than 16 characters"),
+    email: Yup.string().required("Email is required").email("Invalid email"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(4, "Password must be at least 4 characters")
+      .max(15, "Password must be less than 16 characters"),
+    phoneNumber: Yup.string()
+      .matches(/^\+?\d{10,15}$/, "Invalid phone number format")
+      .required("Phone number is required"),
+  }
+);
 
 // Проверка наличия пользователя в базе данных
 const checkUsernameAndEmailExists = async (
