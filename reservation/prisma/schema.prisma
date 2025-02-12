@@ -85,6 +85,7 @@ model User {
   password    String
   photo       Bytes
   type        String
+  role        String
   email       String   @unique
   createdAt   DateTime @default(now())
   historyRest Int[]
