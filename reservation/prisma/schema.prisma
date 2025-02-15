@@ -36,7 +36,7 @@ model Restaurant {
   address            Address?
   workShadules       WorkShadule[]
   kitchens           RestaurantKitchen[]
-  averageBill        Int?
+  averageBill        Decimal?
   lastUpdate         DateTime            @default(now())
   reviews            Review[]
   zones              Zone[]
@@ -89,7 +89,7 @@ model User {
   createdAt   DateTime @default(now())
   historyRest Int[]
   wishList    Int[]
-  phoneNumber String?   @unique
+  phoneNumber String?  @unique
   reviews     Review[]
   rents       Rent[]
 }

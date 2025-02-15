@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import * as Yup from "yup";
@@ -42,12 +41,10 @@ const checkUsernameAndEmailExists = async (
 export async function POST(req: Request) {
   try {
     const user: IUser = await req.json();
-
     // Валидация входящих данных
     const validatedUser = await userSchema.validate(user, {
       abortEarly: false,
     });
-
     // Проверка существования имени пользователя и почты
     if (
       await checkUsernameAndEmailExists(
@@ -73,18 +70,26 @@ export async function POST(req: Request) {
         username: validatedUser.username,
         password: hashedPassword,
         email: validatedUser.email,
-        phoneNumber: validatedUser.phoneNumber || "",
+        phoneNumber: validatedUser?.phoneNumber,
         wishList: [],
         historyRest: [],
         type: "user",
       },
     });
-    return NextResponse.json(createdUser, { status: HTTP_STATUS.OK });
+
+    return NextResponse.json(
+      {
+        id: createdUser.id,
+        username: createdUser.username,
+        email: createdUser.email,
+        phoneNumber: createdUser?.phoneNumber,
+      },
+      { status: HTTP_STATUS.OK }
+    );
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return handleValidationError(error);
     }
-    console.error("Ошибка при создании пользователя:", error);
     return NextResponse.json(
       { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
       { status: HTTP_STATUS.SERVER_ERROR }

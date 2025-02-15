@@ -88,7 +88,7 @@ const auth = async (req: NextRequest) => {
     if (error instanceof Yup.ValidationError) {
       return handleValidationError(error);
     }
-    console.error("Ошибка при создании пользователя:", error);
+    console.error("Ошибка при авторизации:", error);
     return NextResponse.json(
       { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
       { status: HTTP_STATUS.SERVER_ERROR }
