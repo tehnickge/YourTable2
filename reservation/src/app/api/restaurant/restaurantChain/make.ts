@@ -7,7 +7,6 @@ import prisma from "@/lib/prisma";
 
 import { handleValidationError } from "../../APIHelpers";
 import { IRestaurantChainSchema } from "@/types/restaurantChain";
-import { connect } from "http2";
 
 const restaurantChainSchema: Yup.Schema<IRestaurantChainSchema> =
   Yup.object().shape({
