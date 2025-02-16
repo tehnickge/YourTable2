@@ -28,8 +28,8 @@ model Restaurant {
   createdAt          DateTime            @default(now())
   info               String?
   shortInfo          String?
-  restaurantChain    RestaurantChain     @relation(fields: [restaurantChain_fk], references: [id])
-  restaurantChain_fk Int
+  restaurantChain    RestaurantChain?    @relation(fields: [restaurantChain_fk], references: [id])
+  restaurantChain_fk Int?
   photos             RestaurantPhoto[]
   maxHoursToRent     Decimal             @default(1)
   menus              Menu[]
@@ -163,6 +163,6 @@ model RestaurantChain {
 
 model Company {
   id               Int               @id @default(autoincrement())
-  title            String
+  title            String            @unique
   restaurantChains RestaurantChain[]
 }
