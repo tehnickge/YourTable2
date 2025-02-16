@@ -34,7 +34,7 @@ model Restaurant {
   maxHoursToRent     Decimal             @default(1)
   menus              Menu[]
   address            Address?
-  workShadules       WorkShadule[]
+  workShadules       WorkShedule[]
   kitchens           RestaurantKitchen[]
   averageBill        Decimal?
   lastUpdate         DateTime            @default(now())
@@ -118,7 +118,7 @@ model RestaurantKitchen {
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
-model WorkShadule {
+model WorkShedule {
   id            Int        @id @default(autoincrement())
   timeBegin     DateTime
   timeEnd       DateTime
@@ -131,7 +131,7 @@ model WorkShadule {
 model Day {
   id           Int           @id @default(autoincrement())
   title        String
-  workShadules WorkShadule[]
+  workShadules WorkShedule[]
 }
 
 model Address {
