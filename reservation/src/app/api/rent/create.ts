@@ -155,7 +155,7 @@ export const createRent = async (req: NextRequest) => {
         {
           error:
             ERROR_MESSAGES.BAD_ARGUMENTS +
-            " максимальное время для брони привышено",
+            " maximum booking time exceeded",
         },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
