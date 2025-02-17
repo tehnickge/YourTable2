@@ -84,14 +84,21 @@ export const createShedule = async (req: NextRequest) => {
         { status: HTTP_STATUS.BAD_REQUEST }
       );
 
-    const interval = Interval.fromDateTimes(
-      DateTime.fromJSDate(validShedule.timeBegin),
-      DateTime.fromJSDate(validShedule.timeEnd)
-    );
+    const timeBegin = DateTime.fromJSDate(validShedule.timeBegin);
+    const timeEnd = DateTime.fromJSDate(validShedule.timeEnd);
+    // проверка на разницу во времени
+    if (timeBegin >= timeEnd) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin >= time end" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
 
+    const interval = Interval.fromDateTimes(timeBegin, timeEnd);
+    // проверка на корректность интервала
     if (!interval.isValid)
       return NextResponse.json(
-        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin <= time end" },
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin or time end not valid" },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
     // создаем новое рассписание привязывая к конкретному ресторану и дню
