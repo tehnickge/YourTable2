@@ -1,4 +1,4 @@
-export interface IRestaurantChainSchema {
+export interface IRestaurantCreateChainSchema {
   title: string;
   companyTitle: string;
 }

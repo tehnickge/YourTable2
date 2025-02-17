@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Menu" ALTER COLUMN "photo" DROP NOT NULL;

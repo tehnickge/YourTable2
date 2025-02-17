@@ -6,9 +6,9 @@ import * as Yup from "yup";
 import prisma from "@/lib/prisma";
 
 import { handleValidationError } from "../../APIHelpers";
-import { IRestaurantChainSchema } from "@/types/restaurantChain";
+import { IRestaurantCreateChainSchema } from "@/types/restaurantChain";
 
-const restaurantChainSchema: Yup.Schema<IRestaurantChainSchema> =
+const restaurantChainSchema: Yup.Schema<IRestaurantCreateChainSchema> =
   Yup.object().shape({
     title: Yup.string().required(),
     companyTitle: Yup.string().required(),
@@ -61,7 +61,7 @@ export const createChain = async (req: NextRequest) => {
       );
     }
     // получаем данные из тела запроса
-    const body: IRestaurantChainSchema = await req.json();
+    const body: IRestaurantCreateChainSchema = await req.json();
     // валидируем полученные данные
     const validChain = await restaurantChainSchema.validate(body);
     // получение компании

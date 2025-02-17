@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ERROR_MESSAGES, HTTP_STATUS } from "@/types/HTTPStauts";
 import prisma from "@/lib/prisma";
-import { IAddressCreateSchema } from "@/types/address";
-import { handleValidationError } from "@/app/api/APIHelpers";
 
 const getAddressByRestId = async (req: NextRequest) => {
   try {
