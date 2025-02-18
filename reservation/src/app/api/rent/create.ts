@@ -126,6 +126,15 @@ export const createRent = async (req: NextRequest) => {
     const body: IRentCreateSchema = await req.json();
     // валидируем полученные данные
     const validRent = await rentSchema.validate(body);
+
+    // проверка на соподанеии id юзера отпр. запрос с id в jwt и типом юзера
+    if (validRent.userId !== id && type !== "admin") {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " not enough rights" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
     // проверяем существует ли юзер
     if (!(await userExist(validRent.userId))) {
       return NextResponse.json(

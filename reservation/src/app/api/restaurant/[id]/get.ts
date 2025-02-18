@@ -41,7 +41,6 @@ export const getRestaurantById = async (
       );
     }
     const restId = Number(await params.id);
-    console.log(restId);
     const restaurant = await prisma.restaurant.findFirst({
       where: {
         id: restId,
@@ -62,7 +61,7 @@ export const getRestaurantById = async (
       },
     });
 
-    return NextResponse.json("jopa", { status: 200 });
+    return NextResponse.json(restaurant, { status: 200 });
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return handleValidationError(error);
