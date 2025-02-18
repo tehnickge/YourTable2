@@ -34,7 +34,7 @@ model Restaurant {
   maxHoursToRent     Decimal             @default(1)
   menus              Menu[]
   address            Address?
-  workShadules       WorkShedule[]
+  workShedules       WorkShedule[]
   kitchens           RestaurantKitchen[]
   averageBill        Decimal?
   lastUpdate         DateTime            @default(now())
