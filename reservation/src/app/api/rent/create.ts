@@ -5,10 +5,10 @@ import prisma from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { IUserPayload } from "@/types/user";
 import { DateTime, Duration, Interval, Info, Settings } from "luxon";
-import { IZoneCreateSchema } from "@/types/zone";
 import { handleValidationError } from "../APIHelpers";
 import { IRentCreateSchema } from "@/types/rent";
-import { connect } from "http2";
+
+// схема валидации данных
 const rentSchema: Yup.Schema<IRentCreateSchema> = Yup.object().shape({
   timeStart: Yup.date().required(),
   timeEnd: Yup.date().required(),
@@ -17,7 +17,7 @@ const rentSchema: Yup.Schema<IRentCreateSchema> = Yup.object().shape({
   amountPeople: Yup.number().required(),
   slotId: Yup.number().required(),
 });
-
+// существует ли такой юзер
 const userExist = async (id: number): Promise<boolean> => {
   const user = await prisma.user.findFirst({
     where: {
@@ -28,7 +28,17 @@ const userExist = async (id: number): Promise<boolean> => {
   if (user) return true;
   return false;
 };
-
+// получить рассписание на текущий день
+const getSheduleToDate = async (restaurantId: number, dayId: number) => {
+  const shedule = await prisma.workShedule.findFirst({
+    where: {
+      restaurant_fk: restaurantId,
+      day_fk: dayId,
+    },
+  });
+  return shedule;
+};
+// существует ли такой ресторан и слот в нем
 const slotAndRestaurantExist = async (
   restaurantId: number,
   slotId: number
@@ -47,7 +57,7 @@ const slotAndRestaurantExist = async (
       },
     },
   });
-  console.log(rest?.zones[0].slots);
+
   return rest?.zones.some((zone) => zone.slots.length > 0) || false;
 };
 // проверка вместит ли стол такое количество людей
@@ -60,6 +70,7 @@ const checkMaxPeopleInSlot = async (
   return slot?.maxCountPeople >= countPeople ? true : false;
 };
 
+// проверка существуют ли уже ренты в этом временном интервале
 const checkRentExist = async (
   currenTimeStart: DateTime,
   currentTimeEnd: DateTime,
@@ -67,20 +78,17 @@ const checkRentExist = async (
 ): Promise<boolean> => {
   const rents = await prisma.rent.findMany({
     where: {
-      slot_fk: slotId,
       AND: [
+        { slot_fk: slotId },
         { timeStart: { lte: currentTimeEnd.toJSDate() } }, // Существующая аренда начинается до конца текущего интервала
         { timeEnd: { gte: currenTimeStart.toJSDate() } }, // Существующая аренда заканчивается после начала текущего интервала
       ],
     },
   });
-  rents.map((rent) => {
-    console.log(rent);
-  });
 
   return rents.length > 0 ? true : false;
 };
-
+// получение маскимального время ренты
 const getMaxHoursToRent = async (restaurantId: number): Promise<number> => {
   const rest = await prisma.restaurant.findFirst({
     where: {
@@ -147,15 +155,32 @@ export const createRent = async (req: NextRequest) => {
     const timeEnd = DateTime.fromJSDate(validRent.timeEnd);
     const timeNow = DateTime.now();
     const maxHoursToRent = await getMaxHoursToRent(validRent.slotId);
+    const shedule = await getSheduleToDate(
+      validRent.restaurantId,
+      timeStart.weekday
+    );
+
+    //проверка на наличие рассписание на этот день
+    if (!shedule) {
+      return NextResponse.json(
+        {
+          error:
+            ERROR_MESSAGES.BAD_ARGUMENTS +
+            " Shedule not exist this day" +
+            ` ${timeStart.weekdayLong}`,
+        },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    // проверка на максимальное допустимое время ренты
     if (
       Interval.fromDateTimes(timeStart, timeEnd).length("hours") >
       maxHoursToRent
     ) {
       return NextResponse.json(
         {
-          error:
-            ERROR_MESSAGES.BAD_ARGUMENTS +
-            " maximum booking time exceeded",
+          error: ERROR_MESSAGES.BAD_ARGUMENTS + " maximum rent time exceeded",
         },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
@@ -184,8 +209,9 @@ export const createRent = async (req: NextRequest) => {
         { error: ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin < time end" },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
+
     // проверка свободно ли время для ренты
-    if (await checkRentExist(timeStart, timeEnd, validRent.restaurantId)) {
+    if (await checkRentExist(timeStart, timeEnd, validRent.slotId)) {
       return NextResponse.json(
         { error: ERROR_MESSAGES.BAD_ARGUMENTS + " time not free" },
         { status: HTTP_STATUS.BAD_REQUEST }
