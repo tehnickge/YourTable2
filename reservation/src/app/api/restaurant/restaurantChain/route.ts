@@ -1,3 +1,3 @@
-import { createChain } from "./make";
+import { createChain } from "./create";
 
 export { createChain as POST };
