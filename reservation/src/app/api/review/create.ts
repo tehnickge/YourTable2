@@ -5,17 +5,40 @@ import jwt from "jsonwebtoken";
 import * as Yup from "yup";
 import prisma from "@/lib/prisma";
 import { IReviewCreateSchema } from "@/types/review";
+import { handleValidationError } from "../APIHelpers";
 
-const reviewSchema: Yup.Schema<IReviewCreateSchema> =
-  Yup.object().shape({
-    restaurantId: Yup.number().required(),
-    userId: Yup.number().required(),
-    comment: Yup.string().optional(),
-    rating: Yup.number().required(),
+
+const reviewSchema: Yup.Schema<IReviewCreateSchema> = Yup.object().shape({
+  restaurantId: Yup.number().required(),
+  userId: Yup.number().required(),
+  comment: Yup.string().optional(),
+  rating: Yup.number().required(),
+});
+
+const restaurantExist = async (resaurantId: number): Promise<boolean> => {
+  const rest = await prisma.restaurant.findFirst({
+    where: {
+      id: resaurantId,
+    },
   });
 
-const restaurantExist = async() => {}
-export const createChain = async (req: NextRequest) => {
+  return rest ? true : false;
+};
+
+const reviewExist = async (
+  resaurantId: number,
+  userId: number
+): Promise<boolean> => {
+  const review = await prisma.review.findFirst({
+    where: {
+      restaurant_fk: resaurantId,
+      user_fk: userId,
+    },
+  });
+
+  return review ? true : false;
+};
+export const createReview = async (req: NextRequest) => {
   try {
     const token =
       req.cookies.get("jwt_token")?.value ||
@@ -32,50 +55,48 @@ export const createChain = async (req: NextRequest) => {
       token,
       process.env.JWT_SECRET || ""
     ) as IUserPayload;
-    // проверка на роль пользователя
-    if (type !== "admin") {
-      return NextResponse.json(
-        ERROR_MESSAGES.BAD_AUTHORIZED + " Insufficient access rights",
-        {
-          status: HTTP_STATUS.UNAUTHORIZED,
-        }
-      );
-    }
+
     // получаем данные из тела запроса
-    const body: IRestaurantCreateChainSchema = await req.json();
+    const body: IReviewCreateSchema = await req.json();
     // валидируем полученные данные
-    const validChain = await restaurantChainSchema.validate(body);
-    // получение компании
-    const company = await getCompany(validChain.companyTitle);
-    // проверка на существование компании
-    if (!company) {
+    const validReview = await reviewSchema.validate(body);
+    // проверка на роль пользователя и соовтветсвие
+    if (id !== validReview.userId) {
       return NextResponse.json(
         {
-          error: ERROR_MESSAGES.BAD_ARGUMENTS + " Company title not exist",
+          error: ERROR_MESSAGES.BAD_ARGUMENTS + " not your user id",
         },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
-    // прверяем есть ли уже такая сеть ресторанов
-    if (await checkChainExist(validChain.title)) {
+    // прверяем есть ли такой ресторан
+    if (!(await restaurantExist(validReview.restaurantId))) {
       return NextResponse.json(
         {
-          error: ERROR_MESSAGES.BAD_ARGUMENTS + " Chain title already exist",
+          error: ERROR_MESSAGES.BAD_ARGUMENTS + "restaurant not exist",
+        },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+    if (await reviewExist(validReview.restaurantId, validReview.userId)) {
+      return NextResponse.json(
+        {
+          error: ERROR_MESSAGES.BAD_ARGUMENTS + "review already exist",
         },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
 
-    const newChain = await prisma.restaurantChain.create({
+    const newReview = await prisma.review.create({
       data: {
-        title: validChain.title,
-        company: {
-          connect: { id: company.id },
-        },
+        rating: validReview.rating,
+        comment: validReview.comment,
+        restaurant: { connect: { id: validReview.restaurantId } },
+        user: { connect: { id: validReview.userId } },
       },
     });
 
-    return NextResponse.json(newChain, { status: HTTP_STATUS.OK });
+    return NextResponse.json(newReview, { status: HTTP_STATUS.OK });
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return handleValidationError(error);

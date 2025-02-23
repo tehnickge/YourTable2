@@ -101,7 +101,7 @@ model Review {
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   user_fk       Int
   user          User       @relation(fields: [user_fk], references: [id])
-  comment       String
+  comment       String?
   rating        Int
 }
 

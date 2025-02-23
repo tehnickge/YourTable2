@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export interface IRestaurant {
   info: string | null;
   title: string;
@@ -19,4 +21,24 @@ export interface IRestaurantCreateSchema {
   uniqueKey?: string;
 }
 
-export interface IRestaurant {}
+export interface IGetRestaurantWithFilter {
+  kitchens: string[];
+  city?: string;
+  minBill?: number;
+  maxBill?: number;
+  minRating?: number;
+  page: number;
+  pageSize: number;
+  title?: string
+}
+
+export type IRestaurantWithFilter = Prisma.RestaurantGetPayload<{
+  include: {
+    workShedules: true;
+    photos: true;
+    restaurantChain: { include: { company: true } };
+    menus: true;
+    address: true;
+    kitchens: { include: { kitchen: true } };
+  };
+}>;
