@@ -80,7 +80,7 @@ const auth = async (req: NextRequest) => {
       expiresIn: "1d",
     });
     // создание ответа
-    const response = NextResponse.json({ userJWT }, { status: HTTP_STATUS.OK });
+    const response = NextResponse.json( userJWT , { status: HTTP_STATUS.OK });
     // уставнавливаем jwt в coockies
     response.cookies.set("jwt_token", JWTToken, { httpOnly: true, path: "/" });
     return response;

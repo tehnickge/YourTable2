@@ -18,10 +18,24 @@ export interface IUserPayload {
   type: string;
 }
 
+export interface IUserAuth {
+  id?: number;
+  username: string;
+  email: string;
+}
+
+
+
 export interface IUserValidSchemaRegistration {
   id?: number;
   username: string;
   email: string;
   password: string;
   phoneNumber?: string;
+}
+
+export const enum UserTypes {
+  unauthorized = "unauthorized",
+  user = "user",
+  admin = "admin"
 }
