@@ -12,12 +12,12 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
-import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
+import { useRegisterMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   //   username: "nikita12",
   // email: "nikita12@mail.ru",
   // password: "1234",
@@ -27,11 +27,12 @@ const LoginPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [login, { isLoading, error, isSuccess, data }] = useLoginMutation();
+  const [register, { isLoading, error, isSuccess, data }] =
+    useRegisterMutation();
   const { username, type } = useAppSelector((state) => state.session);
   const onSubmit = (data: any) => {
-    console.log("Login data:", data);
-    login(data).then((res) => {
+    console.log("register data:", data);
+    register(data).then((res) => {
       console.log(res);
     });
   };
@@ -46,7 +47,7 @@ const LoginPage: React.FC = () => {
     <div className="flex justify-center items-center min-h-screen">
       <Container maxWidth="xs" className="bg-gray-100 rounded-3xl p-10">
         <Typography variant="h4" align="center" marginBottom="1.5rem">
-          Вход
+          Регистрация
         </Typography>
         {error && (
           <Typography variant="h5" align="center" color="error">
@@ -55,7 +56,7 @@ const LoginPage: React.FC = () => {
         )}
         {isSuccess && (
           <Typography variant="h5" align="center" color="success">
-            Успешный вход {data.username}
+            Пользователь успешно создан {data.username}
           </Typography>
         )}
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -172,9 +173,9 @@ const LoginPage: React.FC = () => {
             >
               <Grid2>
                 <Typography variant="body2" align="center">
-                  Нет аккаунта?{" "}
-                  <Link href="/auth/register" variant="body2">
-                    Зарегистрироваться
+                  Есть аккаунт?{" "}
+                  <Link href="/auth/login" variant="body2">
+                    Войти
                   </Link>
                 </Typography>
               </Grid2>
@@ -186,7 +187,7 @@ const LoginPage: React.FC = () => {
               size={12}
               className={"items-center text-center justify-center"}
             >
-              <Grid2 size={5}>
+              <Grid2 size={6}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -194,7 +195,7 @@ const LoginPage: React.FC = () => {
                   fullWidth
                   disabled={isLoading}
                 >
-                  {isLoading ? "Вход..." : "Войти"}
+                  {isLoading ? "Регистрация" : "Зарегистрироватся"}
                 </Button>
               </Grid2>
             </Grid2>
@@ -205,4 +206,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

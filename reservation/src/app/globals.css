@@ -5,6 +5,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --background-gradient: linear-gradient(
+    135deg,
+    rgba(0, 159, 255, 1) 0%,
+    rgba(196, 113, 237, 1) 70%,
+    rgba(246, 79, 89, 1) 100%
+  );
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,9 +19,13 @@
     --foreground: #ededed; */
   }
 }
-
+html,
+body {
+  height: 100%; /* Задаем 100% высоты для растяжения на весь экран */
+  margin: 0; /* Убираем отступы */
+}
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: var(--background-gradient);
   font-family: Arial, Helvetica, sans-serif;
 }

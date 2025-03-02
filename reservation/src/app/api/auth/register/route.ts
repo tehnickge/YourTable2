@@ -82,6 +82,7 @@ export async function POST(req: Request) {
         id: createdUser.id,
         username: createdUser.username,
         email: createdUser.email,
+        type: createdUser.type,
         phoneNumber: createdUser?.phoneNumber,
       },
       { status: HTTP_STATUS.OK }

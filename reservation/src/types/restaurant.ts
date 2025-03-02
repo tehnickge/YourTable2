@@ -23,13 +23,13 @@ export interface IRestaurantCreateSchema {
 
 export interface IGetRestaurantWithFilter {
   kitchens: string[];
-  city?: string;
-  minBill?: number;
-  maxBill?: number;
-  minRating?: number;
+  city?: string | null;
+  minBill?: number | null;
+  maxBill?: number | null;
+  minRating?: number | null;
   page: number;
   pageSize: number;
-  title?: string
+  title?: string | null;
 }
 
 export type IRestaurantWithFilter = Prisma.RestaurantGetPayload<{

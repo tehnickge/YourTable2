@@ -31,6 +31,24 @@ const SessionSlice = createSlice({
         state.username = null;
         state.email = null;
         state.type = UserTypes.unauthorized;
+      })
+      .addMatcher(
+        authAPI.endpoints.register.matchFulfilled,
+        (state, { payload }) => {
+          return { ...payload };
+        }
+      )
+      .addMatcher(authAPI.endpoints.register.matchRejected, (state) => {
+        state.id = null;
+        state.username = null;
+        state.email = null;
+        state.type = UserTypes.unauthorized;
+      })
+      .addMatcher(authAPI.endpoints.logout.matchFulfilled, (state) => {
+        state.id = null;
+        state.username = null;
+        state.email = null;
+        state.type = UserTypes.unauthorized;
       });
   },
 });

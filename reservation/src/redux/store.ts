@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage, // Использует localStorage
-  whitelist: ["session"], // Сохраняем только session, testSlice не сохраняется
+  whitelist: ["session"], // Сохраняем только session
 };
 
 // Создаем persist reducer
