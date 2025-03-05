@@ -13,6 +13,10 @@
   );
 }
 
+.bg-background-gradient {
+  background: var(--background-gradient);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     /* --background: #0a0a0a;
@@ -26,6 +30,6 @@ body {
 }
 body {
   color: var(--foreground);
-  background: var(--background-gradient);
+  background: white;
   font-family: Arial, Helvetica, sans-serif;
 }

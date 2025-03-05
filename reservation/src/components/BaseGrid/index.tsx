@@ -9,18 +9,24 @@ interface BaseGridProps {
 
 const BaseGrid: React.FC<BaseGridProps> = ({ children, header, footer }) => {
   return (
-    <Grid2 container>
-      <Container maxWidth={"lg"} sx={{ backgroundColor: "red" }}>
+    <Grid2 container size={12} justifyContent="center">
+      {header}
+      <Grid2 maxWidth={"lg"}>
         {/** Header */}
-        <Grid2 container columns={{ xs: 12 }}>
-          {header}
-        </Grid2>
+        <Grid2
+          container
+          size={{ xs: 12 }}
+          justifyContent="center"
+          alignContent="center"
+          alignItems="center"
+        ></Grid2>
 
         {/** MAIN */}
         <Grid2
           container
-          columns={{ xs: 12 }}
+          size={{ xs: 12 }}
           spacing={4}
+          columnSpacing={4}
           flexDirection="row"
           justifyContent="center"
           alignItems="flex-start"
@@ -30,8 +36,8 @@ const BaseGrid: React.FC<BaseGridProps> = ({ children, header, footer }) => {
         </Grid2>
 
         {/** footer */}
-        <Grid2 columns={{ xs: 12 }}>{footer}</Grid2>
-      </Container>
+        <Grid2 size={{ xs: 12 }}>{footer}</Grid2>
+      </Grid2>
     </Grid2>
   );
 };
