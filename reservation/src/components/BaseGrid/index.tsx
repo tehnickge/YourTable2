@@ -9,10 +9,10 @@ interface BaseGridProps {
 
 const BaseGrid: React.FC<BaseGridProps> = ({ children, header, footer }) => {
   return (
-    <Grid2 container columns={{ xs: 12 }}>
+    <Grid2 container>
       <Container maxWidth={"lg"} sx={{ backgroundColor: "red" }}>
         {/** Header */}
-        <Grid2 alignContent="center" alignItems="center" textAlign="center">
+        <Grid2 container columns={{ xs: 12 }}>
           {header}
         </Grid2>
 

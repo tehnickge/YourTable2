@@ -1,6 +1,7 @@
 "use client";
 
 import BaseGrid from "@/components/BaseGrid";
+import Header from "@/components/Header";
 import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { UserTypes } from "@/types/user";
@@ -37,13 +38,10 @@ export default function Home() {
     { data: "TEST", id: 1 },
     { data: "TEST", id: 2 },
     { data: "TEST", id: 2 },
-    { data: "TEST", id: 1 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 2 },
   ];
 
   return (
-    <BaseGrid header={<div className="">test</div>}>
+    <BaseGrid header={<Header />}>
       {baseData.map((d) => (
         <Grid2
           container
