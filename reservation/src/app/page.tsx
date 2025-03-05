@@ -1,5 +1,6 @@
 "use client";
 
+import BaseGrid from "@/components/BaseGrid";
 import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { UserTypes } from "@/types/user";
@@ -22,10 +23,20 @@ export default function Home() {
     }
   };
 
+  const baseData = [
+    { data: "TEST", id: 1 },
+    { data: "TEST", id: 2 },
+    { data: "TEST", id: 2 },
+  ];
+
   return (
-    <>
-      {type === UserTypes.admin && <div>JOPA</div>}
-      <button onClick={handleLogin}>Войти</button>
-    </>
+    <BaseGrid header={<div className="">test</div>}>
+      {baseData.map((d) => (
+        <div>
+          <div>{d.id}</div>
+          <div>{d.data}</div>
+        </div>
+      ))}
+    </BaseGrid>
   );
 }

@@ -45,7 +45,7 @@ export const getRestaurantById = async (
       where: {
         id: restId,
       },
-      select: {
+      include: {
         kitchens: true,
         zones: {
           select: {
