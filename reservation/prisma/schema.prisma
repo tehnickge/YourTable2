@@ -13,14 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model RestaurantPhoto {
-  id            Int        @id @default(autoincrement())
-  title         String?
-  photo         Bytes?
-  restuarant    Restaurant @relation(fields: [restaurant_fk], references: [id], onDelete: Cascade)
-  restaurant_fk Int
-}
-
 model Restaurant {
   id                 Int                 @id @default(autoincrement())
   title              String
@@ -30,7 +22,7 @@ model Restaurant {
   shortInfo          String?
   restaurantChain    RestaurantChain?    @relation(fields: [restaurantChain_fk], references: [id])
   restaurantChain_fk Int?
-  photos             RestaurantPhoto[]
+  photos             String[]            @default([])
   maxHoursToRent     Decimal             @default(1)
   menus              Menu[]
   address            Address?
@@ -83,7 +75,7 @@ model User {
   id              Int      @id @default(autoincrement())
   username        String   @unique
   password        String
-  photo           Bytes?
+  photo           String?
   type            String
   email           String   @unique
   createdAt       DateTime @default(now())
@@ -148,7 +140,7 @@ model Address {
 model Menu {
   id            Int        @id @default(autoincrement())
   titleDish     String?
-  photo         Bytes?
+  photo         String?
   price         Decimal?
   restaurant_fk Int
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
