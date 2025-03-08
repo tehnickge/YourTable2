@@ -42,3 +42,18 @@ export type IRestaurantWithFilter = Prisma.RestaurantGetPayload<{
     kitchens: { include: { kitchen: true } };
   };
 }>;
+
+export type IRestaurantWithAll = Prisma.RestaurantGetPayload<{
+  include: {
+    workShedules: true;
+    photos: true;
+    restaurantChain: { include: { company: true } };
+    menus: true;
+    address: true;
+    kitchens: { include: { kitchen: true } };
+  };
+}>;
+
+export type IRestaurantTitle = {
+  title: string;
+};
