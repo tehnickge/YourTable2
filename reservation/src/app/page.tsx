@@ -43,22 +43,12 @@ export default function Home() {
   return (
     <BaseGrid header={<Header />}>
       {baseData.map((d) => (
-        <Grid2
-          container
-          columns={{
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-          }}
-        >
-          <Card>
-            <CardContent>
-              <Typography variant="h6">{d.data}</Typography>
-              <Typography>Описание... {d.id}</Typography>
-            </CardContent>
-          </Card>
-        </Grid2>
+        <Card>
+          <CardContent>
+            <Typography variant="h6">{d.data}</Typography>
+            <Typography>Описание... {d.id}</Typography>
+          </CardContent>
+        </Card>
       ))}
     </BaseGrid>
   );

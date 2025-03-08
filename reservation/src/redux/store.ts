@@ -5,12 +5,16 @@ import sessionSlice from "./slices/sessionSlice/sessionSlice";
 import { authAPI } from "./slices/sessionSlice/sessionAPI";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; //
+import { restaurantAPI } from "./slices/searchRestaurantSlice/searchRestaurantAPI";
+import searchRestaurantSlice from "./slices/searchRestaurantSlice/searchRestaurantSlice";
 
 // Комбинируем редюсеры
 const rootReducer = combineReducers({
   test: testSlice,
   session: sessionSlice,
+  searchRestaurant: searchRestaurantSlice,
   [authAPI.reducerPath]: authAPI.reducer,
+  [restaurantAPI.reducerPath]: restaurantAPI.reducer,
 });
 
 // Конфиг для redux-persist
@@ -28,7 +32,8 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
-      authAPI.middleware
+      authAPI.middleware,
+      restaurantAPI.middleware
     ),
 });
 
