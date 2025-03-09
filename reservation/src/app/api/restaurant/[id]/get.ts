@@ -55,7 +55,6 @@ export const getRestaurantById = async (
         reviews: true,
         workShedules: true,
         address: true,
-        photos: true,
         menus: true,
         restaurantChain: { select: { company: true } },
       },

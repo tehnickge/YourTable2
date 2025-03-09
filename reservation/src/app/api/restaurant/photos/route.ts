@@ -100,6 +100,7 @@ const addPhotos = async (req: NextRequest) => {
         const compressedBuffer = await sharp(Buffer.from(buffer))
           .resize(800) // Изменяем размер изображения
           .jpeg({ quality: 80 }) // Сжимаем изображение в JPEG с качеством 80%
+          .png({ quality: 80 }) // Сжимаем изображение в PNG с качеством 80%
           .toBuffer();
 
         // Загружаем файл в MinIO и получаем URL

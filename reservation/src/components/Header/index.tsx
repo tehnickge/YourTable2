@@ -10,12 +10,15 @@ import SendRoundedIcon from "@mui/icons-material/Send";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { ReactEventHandler, SyntheticEvent, useEffect } from "react";
 import { useLazyGetAllTitleQuery } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
-import { setSearchText } from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
+import {
+  setSearchText,
+  setTitle,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
 
 const Header = () => {
   const dispatch = useAppDispatch();
   const [getTips] = useLazyGetAllTitleQuery();
-  const { searchText, searchTips } = useAppSelector(
+  const { searchTips, title } = useAppSelector(
     (state) => state.searchRestaurant
   );
 
@@ -23,7 +26,7 @@ const Header = () => {
     event: SyntheticEvent<Element, Event>,
     str: string
   ) => {
-    dispatch(setSearchText(str));
+    dispatch(setTitle(str));
   };
 
   useEffect(() => {

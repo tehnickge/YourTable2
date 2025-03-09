@@ -66,7 +66,7 @@ const getRestaurants = async (req: NextRequest) => {
     if (title) {
       where.title = {
         contains: title,
-        mode: "insensitive", 
+        mode: "insensitive",
       };
     }
 
@@ -77,7 +77,6 @@ const getRestaurants = async (req: NextRequest) => {
       where,
       include: {
         workShedules: true,
-        photos: true,
         restaurantChain: { include: { company: true } },
         menus: true,
         address: true,
@@ -96,7 +95,7 @@ const getRestaurants = async (req: NextRequest) => {
       return handleValidationError(error);
     }
     return NextResponse.json(
-      { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
+      { error: ERROR_MESSAGES.UNEXPECTED_ERROR + ` ${error}` },
       { status: HTTP_STATUS.SERVER_ERROR }
     );
   }

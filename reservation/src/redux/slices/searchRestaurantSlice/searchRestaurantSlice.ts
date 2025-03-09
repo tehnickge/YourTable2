@@ -15,6 +15,8 @@ type SearchRestaurantState = Omit<
   restaurants: RestaurantWithKitchenZoneSchedule[];
   searchTips: IRestaurantTitle[];
   searchText: string;
+  totalPages?: number;
+  totalCount?: number;
 };
 
 export type RestaurantWithKitchenZoneSchedule = Prisma.RestaurantGetPayload<{
@@ -24,6 +26,12 @@ export type RestaurantWithKitchenZoneSchedule = Prisma.RestaurantGetPayload<{
     workShedules: true;
   };
 }>;
+
+export type RestaurantsPagging = {
+  data: RestaurantWithKitchenZoneSchedule[];
+  totalPages: number;
+  totalCount: number;
+};
 
 const initialState: SearchRestaurantState = {
   restaurants: [],
@@ -37,6 +45,8 @@ const initialState: SearchRestaurantState = {
   minRating: null,
   title: null,
   searchText: "",
+  totalPages: undefined,
+  totalCount: undefined,
 };
 const SearchRestaurantSlice = createSlice({
   name: "searchRestaurant",
@@ -111,6 +121,12 @@ const SearchRestaurantSlice = createSlice({
         return {
           ...state,
         };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAll.matchFulfilled,
+      (state, action) => {
+        return { ...state, restaurants: action.payload.data };
       }
     );
   },

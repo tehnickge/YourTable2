@@ -31,7 +31,7 @@ const BaseGrid: React.FC<BaseGridProps> = ({ children, header, footer }) => {
           justifyContent="center"
           alignItems="flex-start"
           flexWrap="wrap"
-          className="lg:p-10 sm:p-2"
+          className="item p-2 sm:p-2 lg:p-10"
         >
           {children}
         </Grid2>

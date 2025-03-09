@@ -35,7 +35,6 @@ export interface IGetRestaurantWithFilter {
 export type IRestaurantWithFilter = Prisma.RestaurantGetPayload<{
   include: {
     workShedules: true;
-    photos: true;
     restaurantChain: { include: { company: true } };
     menus: true;
     address: true;
@@ -46,7 +45,6 @@ export type IRestaurantWithFilter = Prisma.RestaurantGetPayload<{
 export type IRestaurantWithAll = Prisma.RestaurantGetPayload<{
   include: {
     workShedules: true;
-    photos: true;
     restaurantChain: { include: { company: true } };
     menus: true;
     address: true;

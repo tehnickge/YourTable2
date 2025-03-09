@@ -1,11 +1,14 @@
 "use client";
 
 import BaseGrid from "@/components/BaseGrid";
+import RestaurantCard from "@/components/CardRestaurant";
 import Header from "@/components/Header";
+import { useGetAllMutation } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { UserTypes } from "@/types/user";
 import { Card, CardContent, Grid2, Typography } from "@mui/material";
+import { useEffect } from "react";
 
 export default function Home() {
   const [login] = useLoginMutation();
@@ -25,30 +28,35 @@ export default function Home() {
     }
   };
 
-  const baseData = [
-    { data: "TEST", id: 1 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 1 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 1 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 1 },
-    { data: "TEST", id: 2 },
-    { data: "TEST", id: 2 },
-  ];
+  const dispatch = useAppDispatch();
 
+  const [getRests] = useGetAllMutation();
+  const {
+    city,
+    kitchens,
+    maxBill,
+    minBill,
+    restaurants,
+    page,
+    minRating,
+    pageSize,
+    searchText,
+    searchTips,
+    title,
+  } = useAppSelector((state) => state.searchRestaurant);
+  useEffect(() => {
+    getRests({
+      kitchens: [],
+      page: 1,
+      pageSize: 25,
+    });
+  }, []);
+
+  console.log(restaurants);
   return (
     <BaseGrid header={<Header />}>
-      {baseData.map((d) => (
-        <Card>
-          <CardContent>
-            <Typography variant="h6">{d.data}</Typography>
-            <Typography>Описание... {d.id}</Typography>
-          </CardContent>
-        </Card>
+      {restaurants.map((restaurant, i) => (
+        <RestaurantCard key={i} restaurant={restaurant}></RestaurantCard>
       ))}
     </BaseGrid>
   );
