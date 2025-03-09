@@ -40,7 +40,6 @@ export default function Home() {
     page,
     minRating,
     pageSize,
-    searchText,
     searchTips,
     title,
   } = useAppSelector((state) => state.searchRestaurant);

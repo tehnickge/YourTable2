@@ -8,19 +8,35 @@ import {
 } from "@mui/material";
 import SendRoundedIcon from "@mui/icons-material/Send";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { ReactEventHandler, SyntheticEvent, useEffect } from "react";
-import { useLazyGetAllTitleQuery } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import {
-  setSearchText,
-  setTitle,
-} from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
+  MouseEventHandler,
+  ReactEventHandler,
+  SyntheticEvent,
+  useEffect,
+} from "react";
+import {
+  useGetAllMutation,
+  useLazyGetAllTitleQuery,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
+import { setTitle } from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
 
 const Header = () => {
   const dispatch = useAppDispatch();
   const [getTips] = useLazyGetAllTitleQuery();
-  const { searchTips, title } = useAppSelector(
-    (state) => state.searchRestaurant
-  );
+  const {
+    searchTips,
+    title,
+    kitchens,
+    page,
+    pageSize,
+    city,
+    maxBill,
+    minBill,
+    minRating,
+    totalCount,
+    totalPages,
+  } = useAppSelector((state) => state.searchRestaurant);
+  const [getRestaurants] = useGetAllMutation();
 
   const changeTextHandler = (
     event: SyntheticEvent<Element, Event>,
@@ -29,6 +45,18 @@ const Header = () => {
     dispatch(setTitle(str));
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    getRestaurants({
+      kitchens: kitchens,
+      page: page,
+      pageSize: pageSize,
+      city: city,
+      maxBill: maxBill,
+      minBill: minBill,
+      minRating: minRating,
+      title: title,
+    });
+  };
   useEffect(() => {
     getTips();
   }, []);
@@ -111,6 +139,7 @@ const Header = () => {
             <Button
               size="medium"
               variant="text"
+              onClick={handleClick}
               endIcon={
                 <SendRoundedIcon className="min-w-1 text-white rounded-lg" />
               }

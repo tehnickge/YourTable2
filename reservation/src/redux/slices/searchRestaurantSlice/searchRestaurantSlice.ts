@@ -14,7 +14,6 @@ type SearchRestaurantState = Omit<
   kitchens: string[];
   restaurants: RestaurantWithKitchenZoneSchedule[];
   searchTips: IRestaurantTitle[];
-  searchText: string;
   totalPages?: number;
   totalCount?: number;
 };
@@ -42,9 +41,8 @@ const initialState: SearchRestaurantState = {
   city: null,
   minBill: 0,
   maxBill: null,
-  minRating: null,
+  minRating: 0,
   title: null,
-  searchText: "",
   totalPages: undefined,
   totalCount: undefined,
 };
@@ -69,7 +67,7 @@ const SearchRestaurantSlice = createSlice({
       state.city = null;
     },
     setTitle: (state, action: PayloadAction<string>) => {
-      state.title?.length === 0
+      action.payload.length === 0
         ? (state.title = null)
         : (state.title = action.payload);
     },
@@ -99,9 +97,6 @@ const SearchRestaurantSlice = createSlice({
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.page = action.payload >= 1 ? (state.page = action.payload) : 1;
-    },
-    setSearchText: (state, action: PayloadAction<string>) => {
-      state.searchText = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -142,6 +137,5 @@ export const {
   setMinRating,
   setPage,
   setTitle,
-  setSearchText,
 } = SearchRestaurantSlice.actions;
 export default SearchRestaurantSlice.reducer;

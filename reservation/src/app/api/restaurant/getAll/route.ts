@@ -8,10 +8,10 @@ import { IGetRestaurantWithFilter } from "@/types/restaurant";
 const restaurantSchema: Yup.Schema<IGetRestaurantWithFilter> =
   Yup.object().shape({
     kitchens: Yup.array().of(Yup.string().required()).required(),
-    city: Yup.string().optional(),
-    minBill: Yup.number().optional(),
-    maxBill: Yup.number().optional(),
-    minRating: Yup.number().optional(),
+    city: Yup.string().nullable().optional(),
+    minBill: Yup.number().nullable().optional(),
+    maxBill: Yup.number().nullable().optional(),
+    minRating: Yup.number().nullable().optional(),
     title: Yup.string().optional(),
     page: Yup.number().required().min(1),
     pageSize: Yup.number().required().min(3),
@@ -33,7 +33,7 @@ const getRestaurants = async (req: NextRequest) => {
       pageSize = 10,
     } = validRestaurant;
 
-    const where: any = {};
+    const where: any = {}; // Можно уточнить тип здесь, если нужно
 
     if (kitchens?.length) {
       where.kitchens = {
@@ -51,13 +51,13 @@ const getRestaurants = async (req: NextRequest) => {
       };
     }
 
-    if (minBill !== undefined || maxBill !== undefined) {
-      where.averageBill = {};
-      if (minBill !== undefined) where.averageBill.gte = minBill;
-      if (maxBill !== undefined) where.averageBill.lte = maxBill;
-    }
+    where.averageBill = {};
+    if (minBill !== undefined && minBill !== null)
+      where.averageBill.gte = minBill;
+    if (maxBill !== undefined && maxBill !== null)
+      where.averageBill.lte = maxBill;
 
-    if (minRating !== undefined) {
+    if (minRating !== undefined || minRating !== null) {
       where.rating = {
         gte: minRating,
       };
