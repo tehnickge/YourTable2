@@ -22,7 +22,8 @@ const CardRent: React.FC<CardRentProps> = ({
   return (
     <Card
       sx={{
-        boxShadow: "4px 4px 8px 0px rgba(34, 60, 80, 0.2)",
+        border: "2px solid rgba(0,0,0,0.2)",
+        boxShadow: "4px 4px 6px 0px rgba(34, 60, 80, 0.4)",
         flex: "0 1 calc(100% / 3 - 20px * 2/3)",
       }}
     >
@@ -55,6 +56,11 @@ const CardRent: React.FC<CardRentProps> = ({
             <Typography
               lang="ru"
               sx={{
+                fontSize: {
+                  xs: 12,
+                  sm: 16,
+                  md: 20,
+                },
                 hyphens: "auto",
                 wordWrap: "break-word",
               }}
@@ -63,6 +69,11 @@ const CardRent: React.FC<CardRentProps> = ({
             <Typography
               lang="ru"
               sx={{
+                fontSize: {
+                  xs: 12,
+                  sm: 16,
+                  md: 20,
+                },
                 hyphens: "auto",
                 wordWrap: "break-word",
               }}
@@ -73,18 +84,15 @@ const CardRent: React.FC<CardRentProps> = ({
             <Typography
               lang="ru"
               sx={{
+                fontSize: {
+                  xs: 12,
+                  sm: 16,
+                  md: 20,
+                },
                 hyphens: "auto",
                 wordWrap: "break-word",
               }}
-              children={`Начало: ${timeStart}`}
-            />
-            <Typography
-              lang="ru"
-              sx={{
-                hyphens: "auto",
-                wordWrap: "break-word",
-              }}
-              children={`Конец: ${timeEnd}`}
+              children={`Время: ${timeStart} - ${timeEnd}`}
             />
           </Grid2>
         </Grid2>

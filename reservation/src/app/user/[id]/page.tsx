@@ -153,9 +153,20 @@ const UserPage: React.FC<UserPageProps> = ({ params }) => {
           justifyContent="center"
           container
         >
-          <Grid2 size={{ xs: 12 }}>
-            <Typography>Заказы</Typography>
+          <Grid2
+            size={{ xs: 12 }}
+            justifyContent="center"
+            textAlign="center"
+            alignContent="center"
+          >
+            <Typography
+              fontSize={22}
+              alignItems="center"
+              variant="overline"
+              children={"Заказы"}
+            />
           </Grid2>
+
           <Grid2 container size={{ xs: 12 }} gap="20px">
             {HISTORY.map(
               ({ createdAt, id, restaurantTitle, timeEnd, timeStart }, i) => (
@@ -166,7 +177,6 @@ const UserPage: React.FC<UserPageProps> = ({ params }) => {
                   createdAt={createdAt}
                   timeStart={timeStart}
                   timeEnd={timeEnd}
-                  image="https://biz-nes.ru/wp-content/uploads/2022/06/Novyj-proekt-21.jpg"
                 />
               )
             )}
