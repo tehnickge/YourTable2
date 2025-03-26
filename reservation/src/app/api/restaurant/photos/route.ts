@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadFile } from "@/lib/minio";
-import formidable from "formidable";
+import { uploadRestaurantFile } from "@/lib/minio";
 import { ERROR_MESSAGES, HTTP_STATUS } from "@/types/HTTPStauts";
 import { IUserPayload } from "@/types/user";
 import jwt from "jsonwebtoken";
@@ -13,41 +12,37 @@ export const config = {
   },
 };
 
-type UploadPhotoToRestaurant = {
-  restaurantId: string;
-};
-
 const addPhotos = async (req: NextRequest) => {
   try {
-    // const token =
-    //   req.cookies.get("jwt_token")?.value ||
-    //   req.headers.get("Authorization")?.split(" ")[1];
+    const token =
+      req.cookies.get("jwt_token")?.value ||
+      req.headers.get("Authorization")?.split(" ")[1];
 
-    // if (!token) {
-    //   //   return NextResponse.redirect(new URL("api/login", req.url));
-    //   return NextResponse.json(
-    //     { error: ERROR_MESSAGES.BAD_AUTHORIZED },
-    //     {
-    //       status: HTTP_STATUS.UNAUTHORIZED,
-    //     }
-    //   );
-    // }
-    // // вытаскиваем и проверяем jwt
-    // const { id, username, email, type } = jwt.verify(
-    //   token,
-    //   process.env.JWT_SECRET || ""
-    // ) as IUserPayload;
-    // // проверка на роль пользователя
-    // if (type !== "admin") {
-    //   return NextResponse.json(
-    //     {
-    //       error: ERROR_MESSAGES.BAD_AUTHORIZED + " Insufficient access rights",
-    //     },
-    //     {
-    //       status: HTTP_STATUS.UNAUTHORIZED,
-    //     }
-    //   );
-    // }
+    if (!token) {
+      //   return NextResponse.redirect(new URL("api/login", req.url));
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_AUTHORIZED },
+        {
+          status: HTTP_STATUS.UNAUTHORIZED,
+        }
+      );
+    }
+    // вытаскиваем и проверяем jwt
+    const { id, username, email, type } = jwt.verify(
+      token,
+      process.env.JWT_SECRET || ""
+    ) as IUserPayload;
+    // проверка на роль пользователя
+    if (type !== "admin") {
+      return NextResponse.json(
+        {
+          error: ERROR_MESSAGES.BAD_AUTHORIZED + " Insufficient access rights",
+        },
+        {
+          status: HTTP_STATUS.UNAUTHORIZED,
+        }
+      );
+    }
     // получение объекта из form-data
     const formData = await req.formData();
 
@@ -104,7 +99,7 @@ const addPhotos = async (req: NextRequest) => {
           .toBuffer();
 
         // Загружаем файл в MinIO и получаем URL
-        const fileUrl = await uploadFile(compressedBuffer, fileName);
+        const fileUrl = await uploadRestaurantFile(compressedBuffer, fileName);
 
         // Добавляем URL файла в список
         fileUrls.push(fileUrl);
