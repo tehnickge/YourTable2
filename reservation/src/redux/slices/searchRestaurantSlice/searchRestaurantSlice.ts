@@ -68,7 +68,7 @@ const SearchRestaurantSlice = createSlice({
     },
     setTitle: (state, action: PayloadAction<string>) => {
       action.payload.length === 0
-        ? (state.title = null)
+        ? (state.title = "")
         : (state.title = action.payload);
     },
     setMinBill: (state, action: PayloadAction<number>) => {
