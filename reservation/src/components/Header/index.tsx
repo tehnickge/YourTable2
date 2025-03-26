@@ -5,6 +5,7 @@ import {
   Container,
   Grid2,
   TextField,
+  Typography,
 } from "@mui/material";
 import SendRoundedIcon from "@mui/icons-material/Send";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
@@ -48,7 +49,7 @@ const Header = () => {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     getRestaurants({
       kitchens: kitchens,
-      page: page,
+      page: 1,
       pageSize: pageSize,
       city: city,
       maxBill: maxBill,
@@ -93,19 +94,22 @@ const Header = () => {
               onInputChange={changeTextHandler}
               sx={{
                 width: "100%",
-                backgroundColor: "transparent", // Прозрачный фон
-                borderRadius: "8px", // Скругление углов
+                backgroundColor: "transparent",
+                borderRadius: "8px",
                 "& .MuiAutocomplete-inputRoot": {
                   borderRadius: "8px",
+                  "&:hover": {},
+                  "&:focus": {
+                    boder: "white",
+                  },
                 },
                 "& .MuiAutocomplete-popupIndicator": {
-                  color: "gray", // Цвет стрелки раскрытия
+                  color: "gray",
+                  "&:hover": {},
                 },
                 "& .MuiAutocomplete-option": {
-                  padding: "8px", // Отступы в опциях
-                  "&:hover": {
-                    backgroundColor: "#f0f0f0", // Цвет фона при наведении
-                  },
+                  padding: "8px",
+                  "&:hover": {},
                 },
               }}
               renderInput={(params) => (
@@ -145,6 +149,18 @@ const Header = () => {
               }
               className="min-w-1 h-full rounded-xl "
             />
+          </Grid2>
+          <Grid2
+            size={{ xs: 12 }}
+            container
+            justifyContent="center"
+            alignContent="center"
+            alignItems="center"
+            spacing={2}
+            sx={{ mt: "12px" }}
+          >
+            <Typography children={"2"} />
+            <Typography children={"3"} />
           </Grid2>
         </Grid2>
       </Container>

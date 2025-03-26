@@ -3,11 +3,18 @@
 import BaseGrid from "@/components/BaseGrid";
 import RestaurantCard from "@/components/CardRestaurant";
 import Header from "@/components/Header";
-import { useGetAllMutation } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
+import {
+  useGetAllMutation,
+  useLazyGetAllKitchensQuery,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
+import {
+  setMaxBill,
+  setPage,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
 import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { UserTypes } from "@/types/user";
-import { Card, CardContent, Grid2, Typography } from "@mui/material";
+import { Button, Card, CardContent, Grid2, Typography } from "@mui/material";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -31,6 +38,7 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   const [getRests] = useGetAllMutation();
+
   const {
     city,
     kitchens,
@@ -42,21 +50,57 @@ export default function Home() {
     pageSize,
     searchTips,
     title,
+    totalCount,
+    totalPages,
   } = useAppSelector((state) => state.searchRestaurant);
+
   useEffect(() => {
     getRests({
-      kitchens: [],
-      page: 1,
-      pageSize: 25,
+      kitchens: kitchens,
+      page: page,
+      pageSize: pageSize,
+      city: city,
+      maxBill: maxBill,
+      minBill: minBill,
+      minRating: minRating,
+      title: title,
     });
-  }, []);
+  }, [page]);
 
-  console.log(restaurants);
+  const prevButtonHandler = () => {
+    dispatch(setPage(page - 1));
+  };
+  const nextButtonHandler = () => {
+    dispatch(setPage(page + 1));
+  };
+
   return (
     <BaseGrid header={<Header />}>
-      {restaurants.map((restaurant, i) => (
-        <RestaurantCard key={i} restaurant={restaurant}></RestaurantCard>
-      ))}
+      <Grid2 container size={{ xs: 12 }} gap="20px">
+        {restaurants.map((restaurant, i) => (
+          <RestaurantCard key={i} restaurant={restaurant}></RestaurantCard>
+        ))}
+      </Grid2>
+
+      <Grid2
+        size={{ xs: 12 }}
+        container
+        justifyContent="center"
+        alignContent="center"
+        alignItems="center"
+      >
+        <Button
+          variant="text"
+          onClick={prevButtonHandler}
+          children={<Typography fontSize={24} children={"<"} />}
+        />
+        <Typography fontSize={24} children={`${page} / ${totalPages}`} />
+        <Button
+          variant="text"
+          onClick={nextButtonHandler}
+          children={<Typography fontSize={24} children={">"} />}
+        />
+      </Grid2>
     </BaseGrid>
   );
 }

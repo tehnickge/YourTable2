@@ -1,7 +1,10 @@
 import { IGetRestaurantWithFilter, IRestaurantTitle } from "@/types/restaurant";
 import { IUser, IUserAuth, IUserPayload } from "@/types/user";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RestaurantsPagging, RestaurantWithKitchenZoneSchedule } from "./searchRestaurantSlice";
+import {
+  RestaurantsPagging,
+  RestaurantWithKitchenZoneSchedule,
+} from "./searchRestaurantSlice";
 import { title } from "process";
 
 export const restaurantAPI = createApi({
@@ -21,13 +24,20 @@ export const restaurantAPI = createApi({
     getById: builder.query<string, null>({
       query: (id) => ({
         url: `/${id}`,
-        method: "get",
+        method: "GET",
       }),
     }),
 
     getAllTitle: builder.query<IRestaurantTitle[], void>({
       query: (title) => ({
         url: `/getAllTitles`,
+      }),
+    }),
+
+    getAllKitchens: builder.query<{ id: number; title: string }[], void>({
+      query: () => ({
+        url: "kitchens",
+        method: "GET",
       }),
     }),
   }),
@@ -37,4 +47,5 @@ export const {
   useGetAllMutation,
   useLazyGetByIdQuery,
   useLazyGetAllTitleQuery,
+  useLazyGetAllKitchensQuery,
 } = restaurantAPI;

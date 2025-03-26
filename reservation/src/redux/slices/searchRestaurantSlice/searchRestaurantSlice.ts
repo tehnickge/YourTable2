@@ -37,14 +37,14 @@ const initialState: SearchRestaurantState = {
   kitchens: [],
   searchTips: [],
   page: 1,
-  pageSize: 25,
+  pageSize: 9,
   city: null,
   minBill: 0,
   maxBill: null,
   minRating: 0,
-  title: null,
-  totalPages: undefined,
-  totalCount: undefined,
+  title: "",
+  totalPages: 0,
+  totalCount: 0,
 };
 const SearchRestaurantSlice = createSlice({
   name: "searchRestaurant",
@@ -90,13 +90,16 @@ const SearchRestaurantSlice = createSlice({
     setMinRating: (state, action: PayloadAction<number>) => {
       if (state.minBill) {
         if (action.payload < state.minBill) {
-          state.minBill = action.payload;
+          return { ...state, minBill: action.payload };
         }
       }
-      state.maxBill = action.payload;
+      return { ...state, maxBill: action.payload };
     },
     setPage: (state, action: PayloadAction<number>) => {
-      state.page = action.payload >= 1 ? (state.page = action.payload) : 1;
+      return {
+        ...state,
+        page: action.payload >= 1 ? action.payload : 1,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -121,7 +124,12 @@ const SearchRestaurantSlice = createSlice({
     builder.addMatcher(
       restaurantAPI.endpoints.getAll.matchFulfilled,
       (state, action) => {
-        return { ...state, restaurants: action.payload.data };
+        return {
+          ...state,
+          restaurants: action.payload.data,
+          totalPages: action.payload.totalPages,
+          totalCount: action.payload.totalCount,
+        };
       }
     );
   },

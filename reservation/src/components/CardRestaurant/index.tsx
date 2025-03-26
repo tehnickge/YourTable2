@@ -32,10 +32,18 @@ const randomColors = ["red", "purple", "blue", "orange", "yellow"];
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
-    <Card className="relative min-w-80 max-w-96 flex-1 overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg group">
+    <Card
+      sx={{
+        flex: {
+          xs: "0 1 calc(100% / 2 - 20px * 1 / 2)",
+          sm: "0 1 calc(100% / 2 - 20px * 1 / 2)",
+          md: "0 1 calc(100% / 3 - 20px * 2 / 3)",
+        },
+      }}
+      className="relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg group"
+    >
       <div className="absolute inset-0 bg-gray-400 opacity-0 group-hover:opacity-35 transition-opacity duration-300 pointer-events-none z-10" />
       <CardHeader
-        sx={{ backgroundColor: "#eeeeee" }}
         avatar={
           <Avatar
             sx={{
