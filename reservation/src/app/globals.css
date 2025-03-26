@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #e6e6e6;
   --foreground: #171717;
   --background-gradient: linear-gradient(
     135deg,
@@ -30,6 +30,6 @@ body {
 }
 body {
   color: var(--foreground);
-  background: #f4f4f4;
+  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
