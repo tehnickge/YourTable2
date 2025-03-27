@@ -14,8 +14,8 @@ type SearchRestaurantState = Omit<
   kitchens: string[];
   restaurants: RestaurantWithKitchenZoneSchedule[];
   searchTips: IRestaurantTitle[];
-  totalPages?: number;
-  totalCount?: number;
+  totalPages: number;
+  totalCount: number;
 };
 
 export type RestaurantWithKitchenZoneSchedule = Prisma.RestaurantGetPayload<{

@@ -71,7 +71,7 @@ export default function Home() {
     dispatch(setPage(page - 1));
   };
   const nextButtonHandler = () => {
-    dispatch(setPage(page + 1));
+    if (page < totalPages) dispatch(setPage(page + 1));
   };
 
   return (
@@ -92,10 +92,12 @@ export default function Home() {
         <Button
           variant="text"
           onClick={prevButtonHandler}
+          disabled={page <= 1}
           children={<Typography fontSize={24} children={"<"} />}
         />
         <Typography fontSize={24} children={`${page} / ${totalPages}`} />
         <Button
+          disabled={page >= totalPages}
           variant="text"
           onClick={nextButtonHandler}
           children={<Typography fontSize={24} children={">"} />}
