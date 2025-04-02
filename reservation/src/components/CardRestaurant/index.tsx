@@ -1,12 +1,15 @@
 "use client";
 import {
   Avatar,
+  Box,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   CardMedia,
+  Chip,
   Collapse,
+  Grid2,
   IconButton,
   IconButtonProps,
   styled,
@@ -14,15 +17,15 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Navigation, Pagination } from "swiper/modules";
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/navigation";
+
 import { RestaurantWithKitchenZoneSchedule } from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
+import Link from "next/link";
 
 interface RestaurantCardProps {
   restaurant: RestaurantWithKitchenZoneSchedule;
@@ -34,15 +37,16 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
     <Card
       sx={{
+        display: "flex",
+        flexDirection: "column",
         flex: {
-          xs: "0 1 calc(100% / 2 - 20px * 1 / 2)",
+          xs: "0 1 calc(100% / 1 )",
           sm: "0 1 calc(100% / 2 - 20px * 1 / 2)",
           md: "0 1 calc(100% / 3 - 20px * 2 / 3)",
         },
       }}
-      className="relative overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg group"
+      className="relative overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gray-400 opacity-0 group-hover:opacity-35 transition-opacity duration-300 pointer-events-none z-10" />
       <CardHeader
         avatar={
           <Avatar
@@ -60,8 +64,9 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
       />
       <Swiper
         navigation
-        modules={[Navigation]}
-        className="relative w-ful h-48 sm:h-60 md:h-80 xl:h-96 "
+        pagination
+        modules={[Navigation, Pagination]}
+        className="relative w-full h-48 sm:h-60 md:h-80 xl:h-96"
       >
         {restaurant.photos.map((photo, i) => (
           <SwiperSlide key={i}>
@@ -69,29 +74,77 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
               src={photo}
               alt={`photo-${i}`}
               layout="fill"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              loading="lazy"
               objectFit="cover"
-              priority
             />
           </SwiperSlide>
         ))}
       </Swiper>
+      <Link href={`/restaurant/${restaurant.id}`} className="grow">
+        <CardContent>
+          <Grid2 size={{ xs: 12 }} container direction="row" gap={1}>
+            <Typography
+              className="overflow-hidden text-ellipsis hyphens-auto "
+              lang="ru"
+              sx={{
+                fontSize: {
+                  xs: 14,
+                },
 
-      <CardContent>
+                wordWrap: "break-word",
+              }}
+            >
+              Описание:
+            </Typography>
+            <Typography
+              className="overflow-hidden text-ellipsis "
+              lang="ru"
+              sx={{
+                fontSize: {
+                  xs: 14,
+                },
+                wordWrap: "break-word",
+              }}
+            >
+              {restaurant.shortInfo}
+            </Typography>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }} sx={{ mt: 1 }} container gap={1}>
+            {restaurant.kitchens.map((kitchen, i) => (
+              <Chip
+                key={i}
+                size="small"
+                sx={{ fontSize: 12 }}
+                label={kitchen.kitchen.title}
+              />
+            ))}
+          </Grid2>
+        </CardContent>
+        <Box />
+      </Link>
+
+      <CardActions disableSpacing className="flex justify-between">
+        <div className="flex">
+          <IconButton aria-label="add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+          <IconButton aria-label="share">
+            <ShareIcon />
+          </IconButton>
+        </div>
         <Typography
-          variant="h6"
-          className="w-full h-24 overflow-hidden text-ellipsis"
+          className="overflow-hidden text-ellipsis "
+          lang="ru"
+          sx={{
+            fontSize: {
+              xs: 18,
+            },
+            wordWrap: "break-word",
+          }}
         >
-          {restaurant.info}
+          {restaurant.address?.city}
         </Typography>
-      </CardContent>
-
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
       </CardActions>
     </Card>
   );

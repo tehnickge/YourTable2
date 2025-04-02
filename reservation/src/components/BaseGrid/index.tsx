@@ -10,17 +10,9 @@ interface BaseGridProps {
 const BaseGrid: React.FC<BaseGridProps> = ({ children, header, footer }) => {
   return (
     <Grid2 container size={12} justifyContent="center">
+      {/** Header */}
       {header}
       <Grid2 maxWidth={"lg"}>
-        {/** Header */}
-        <Grid2
-          container
-          size={{ xs: 12 }}
-          justifyContent="center"
-          alignContent="center"
-          alignItems="center"
-        ></Grid2>
-
         {/** MAIN */}
         <Grid2
           container

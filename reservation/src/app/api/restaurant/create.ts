@@ -37,9 +37,12 @@ export const createRestaurant = async (req: NextRequest) => {
 
     if (!token) {
       //   return NextResponse.redirect(new URL("api/login", req.url));
-      return NextResponse.json({error: ERROR_MESSAGES.BAD_AUTHORIZED}, {
-        status: HTTP_STATUS.UNAUTHORIZED,
-      });
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_AUTHORIZED },
+        {
+          status: HTTP_STATUS.UNAUTHORIZED,
+        }
+      );
     }
     // вытаскиваем и проверяем jwt
     const { id, username, email, type } = jwt.verify(
@@ -49,7 +52,9 @@ export const createRestaurant = async (req: NextRequest) => {
     // проверка на роль пользователя
     if (type !== "admin") {
       return NextResponse.json(
-        {error: ERROR_MESSAGES.BAD_AUTHORIZED + " Insufficient access rights"},
+        {
+          error: ERROR_MESSAGES.BAD_AUTHORIZED + " Insufficient access rights",
+        },
         {
           status: HTTP_STATUS.UNAUTHORIZED,
         }
@@ -70,6 +75,7 @@ export const createRestaurant = async (req: NextRequest) => {
         title: restValid.title,
         shortInfo: restValid.shortInfo || "",
         uniqueKey: restValid.uniqueKey,
+        averageBill: 333,
       },
     });
 

@@ -1,7 +1,9 @@
 "use client";
 import BaseGrid from "@/components/BaseGrid";
 import CardRent from "@/components/CardRent";
+import SmallHeader from "@/components/Header/SmallHeader";
 import { Avatar, Button, Card, Grid2, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { use } from "react";
 
 interface UserPageProps {
@@ -107,10 +109,11 @@ const HISTORY = [
 ];
 
 const UserPage: React.FC<UserPageProps> = ({ params }) => {
+  const router = useRouter();
   const { id } = use(params);
 
   return (
-    <BaseGrid header={undefined}>
+    <BaseGrid header={<SmallHeader />}>
       <Grid2
         sx={{ width: "100%" }}
         size={{
@@ -133,7 +136,7 @@ const UserPage: React.FC<UserPageProps> = ({ params }) => {
             <Typography children={"ФИО:"} />
             <Typography children={"Почта:"} />
           </Grid2>
-          <Grid2>
+          <Grid2 container gap={1} direction="column">
             <Typography
               textAlign="center"
               children={
@@ -141,6 +144,20 @@ const UserPage: React.FC<UserPageProps> = ({ params }) => {
                   size="small"
                   children={"Редактировать"}
                   variant="contained"
+                />
+              }
+            />
+            <Typography
+              textAlign="center"
+              children={
+                <Button
+                  size="small"
+                  children={"ВЫЙТИ"}
+                  variant="contained"
+                  color="error"
+                  onClick={() => {
+                    router.push("/auth/logout");
+                  }}
                 />
               }
             />

@@ -17,13 +17,32 @@ import {
 } from "react";
 import {
   useGetAllMutation,
+  useLazyGetAllCitiesQuery,
+  useLazyGetAllKitchensQuery,
   useLazyGetAllTitleQuery,
 } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
-import { setTitle } from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
+import {
+  appendKitchen,
+  popKitchen,
+  setCity,
+  setTitle,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
+import BaseFilter, { BaseFilterData } from "../BaseFilter";
+import BaseRadioFilter from "../BaseRadioFIlter";
+
+import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
+import AppRegistrationRoundedIcon from "@mui/icons-material/AppRegistrationRounded";
+import { useRouter } from "next/navigation";
+import { UserTypes } from "@/types/user";
 
 const Header = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+
   const [getTips] = useLazyGetAllTitleQuery();
+  const [getKitchens] = useLazyGetAllKitchensQuery();
+  const [getRestaurants] = useGetAllMutation();
+  const [getCities] = useLazyGetAllCitiesQuery();
   const {
     searchTips,
     title,
@@ -36,8 +55,10 @@ const Header = () => {
     minRating,
     totalCount,
     totalPages,
+    allKitchens,
+    allCities,
   } = useAppSelector((state) => state.searchRestaurant);
-  const [getRestaurants] = useGetAllMutation();
+  const { id, type } = useAppSelector((state) => state.session);
 
   const changeTextHandler = (
     event: SyntheticEvent<Element, Event>,
@@ -48,7 +69,7 @@ const Header = () => {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     getRestaurants({
-      kitchens: kitchens,
+      kitchens: kitchens.map((kitchen) => kitchen.title),
       page: 1,
       pageSize: pageSize,
       city: city,
@@ -60,7 +81,29 @@ const Header = () => {
   };
   useEffect(() => {
     getTips();
+    getKitchens();
+    getCities();
   }, []);
+
+  const changeFIlterKitchen = (data: BaseFilterData) => {
+    if (!kitchens.some((kitchen) => kitchen.id === data.id)) {
+      dispatch(appendKitchen(data));
+    } else {
+      dispatch(popKitchen(data));
+    }
+  };
+
+  const changeFilterCities = (data: string) => {
+    dispatch(setCity(data));
+  };
+
+  const profileButtonHandler = () => {
+    router.push(`/user/${id}`);
+  };
+
+  const registerButtonHandler = () => {
+    router.push("/auth/register");
+  };
 
   return (
     <Grid2
@@ -76,6 +119,44 @@ const Header = () => {
       className="bg-background-gradient p-4 sm:p-4 md:p-8 lg:p-12"
     >
       <Container>
+        <Grid2 container size={{ xs: 12 }}>
+          {type === UserTypes.unauthorized ? (
+            <Grid2>
+              <Button
+                variant="contained"
+                sx={{
+                  color: "white",
+                  backgroundColor: "transparent",
+                  boxShadow: 0,
+                  "&:hover": { boxShadow: 0 },
+                  "&:disabled": { backgroundColor: "transparent" },
+                }}
+                onClick={registerButtonHandler}
+                startIcon={<AppRegistrationRoundedIcon />}
+              >
+                signin
+              </Button>
+            </Grid2>
+          ) : (
+            <Grid2>
+              <Button
+                variant="contained"
+                sx={{
+                  color: "white",
+                  backgroundColor: "transparent",
+                  boxShadow: 0,
+                  "&:hover": { boxShadow: 0 },
+                  "&:disabled": { backgroundColor: "transparent" },
+                }}
+                disabled={type === UserTypes.unauthorized}
+                onClick={profileButtonHandler}
+                startIcon={<AccountBoxRoundedIcon />}
+              >
+                profile
+              </Button>
+            </Grid2>
+          )}
+        </Grid2>
         <Grid2 container size={{ xs: 12 }}>
           <Grid2
             size={{ xs: 10, sm: 11 }}
@@ -95,38 +176,58 @@ const Header = () => {
               sx={{
                 width: "100%",
                 backgroundColor: "transparent",
-                borderRadius: "8px",
+                borderRadius: "12px",
                 "& .MuiAutocomplete-inputRoot": {
-                  borderRadius: "8px",
-                  "&:hover": {},
-                  "&:focus": {
-                    boder: "white",
+                  color: "white", // Белый текст
+                  borderRadius: "12px",
+                  padding: "8px", // Вернул исходный padding
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "white", // Белая обводка всегда
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "white", // Белая обводка при hover
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "white", // Белая обводка при focus
                   },
                 },
                 "& .MuiAutocomplete-popupIndicator": {
-                  color: "gray",
-                  "&:hover": {},
+                  color: "white", // Белый цвет иконки
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                },
+                "& .MuiAutocomplete-clearIndicator": {
+                  color: "white", // Белый цвет иконки очистки
                 },
                 "& .MuiAutocomplete-option": {
-                  padding: "8px",
-                  "&:hover": {},
+                  color: "black", // Цвет текста в выпадающем списке
+                  padding: "8px", // Оставил отступы в списке
                 },
               }}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Search input"
+                  label="Поиск..."
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      border: "2px solid white", // Белая обводка
-                      borderRadius: "8px", // Скругление углов
-                      padding: "8px", // Внутренние отступы
+                      color: "white", // Белый текст
+                      padding: "8px", // Вернул исходный padding
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white", // Белая обводка всегда
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white", // Белая обводка при hover
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white", // Белая обводка при focus
+                      },
                     },
                     "& .MuiInputLabel-root": {
-                      color: "white", // Цвет лейбла
+                      color: "white", // Белый цвет лейбла
                     },
-                    "& .MuiOutlinedInput-root.Mui-focused": {
-                      borderColor: "blue", // Цвет обводки при фокусе
+                    "& .MuiInputBase-input": {
+                      color: "white", // Белый цвет введенного текста
                     },
                   }}
                 />
@@ -159,8 +260,18 @@ const Header = () => {
             spacing={2}
             sx={{ mt: "12px" }}
           >
-            <Typography children={"2"} />
-            <Typography children={"3"} />
+            <BaseFilter
+              changeFIlterData={changeFIlterKitchen}
+              data={allKitchens}
+              filterData={kitchens}
+              title="Кухни"
+            />
+            <BaseRadioFilter
+              changeFIlterData={changeFilterCities}
+              data={allCities}
+              filterData={city}
+              title="Город"
+            />
           </Grid2>
         </Grid2>
       </Container>

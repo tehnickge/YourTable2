@@ -36,7 +36,14 @@ export const restaurantAPI = createApi({
 
     getAllKitchens: builder.query<{ id: number; title: string }[], void>({
       query: () => ({
-        url: "kitchens",
+        url: "/kitchens",
+        method: "GET",
+      }),
+    }),
+
+    getAllCities: builder.query<string[], void>({
+      query: () => ({
+        url: "/address/city",
         method: "GET",
       }),
     }),
@@ -48,4 +55,5 @@ export const {
   useLazyGetByIdQuery,
   useLazyGetAllTitleQuery,
   useLazyGetAllKitchensQuery,
+  useLazyGetAllCitiesQuery,
 } = restaurantAPI;

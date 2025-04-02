@@ -68,6 +68,32 @@ export const createAddress = async (req: NextRequest) => {
       );
     }
     // создаем новый адресс привязывая к конкретному ресторану
+    console.log(validAddress);
+
+    const restuarnt = await prisma.restaurant.findFirst({
+      where: { id: validAddress.restaurant_fk },
+    });
+
+    if (!restuarnt) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    const address = await prisma.address.findFirst({
+      where: {
+        restaurant_fk: validAddress.restaurant_fk,
+      },
+    });
+
+    if (address) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
     const newAddress = await prisma.address.create({
       data: {
         city: validAddress.city,
@@ -87,6 +113,7 @@ export const createAddress = async (req: NextRequest) => {
     if (error instanceof Yup.ValidationError) {
       return handleValidationError(error);
     }
+    console.log(error);
     return NextResponse.json(
       { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
       { status: HTTP_STATUS.SERVER_ERROR }

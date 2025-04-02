@@ -24,8 +24,6 @@ export interface IUserAuth {
   email: string;
 }
 
-
-
 export interface IUserValidSchemaRegistration {
   id?: number;
   username: string;
@@ -37,5 +35,5 @@ export interface IUserValidSchemaRegistration {
 export const enum UserTypes {
   unauthorized = "unauthorized",
   user = "user",
-  admin = "admin"
+  admin = "admin",
 }

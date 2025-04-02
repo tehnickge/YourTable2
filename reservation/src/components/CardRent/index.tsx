@@ -22,8 +22,7 @@ const CardRent: React.FC<CardRentProps> = ({
   return (
     <Card
       sx={{
-        border: "1px solid rgba(0,0,0,0.2)",
-        boxShadow: "4px 4px 6px 0px rgba(34, 60, 80, 0.4)",
+        boxShadow: "0px 2px 4px 0px rgba(34, 60, 80, 0.3)",
         flex: {
           xs: "0 1 calc(100% / 2 - 20px * 1/2)",
           md: "0 1 calc(100% / 3 - 20px * 2/3)",

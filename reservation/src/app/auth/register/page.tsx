@@ -31,10 +31,7 @@ const RegisterPage: React.FC = () => {
     useRegisterMutation();
   const { username, type } = useAppSelector((state) => state.session);
   const onSubmit = (data: any) => {
-    console.log("register data:", data);
-    register(data).then((res) => {
-      console.log(res);
-    });
+    register(data);
   };
 
   useEffect(() => {

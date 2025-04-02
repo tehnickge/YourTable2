@@ -56,7 +56,7 @@ export default function Home() {
 
   useEffect(() => {
     getRests({
-      kitchens: kitchens,
+      kitchens: kitchens.map((kitchen) => kitchen.title),
       page: page,
       pageSize: pageSize,
       city: city,
@@ -76,9 +76,14 @@ export default function Home() {
 
   return (
     <BaseGrid header={<Header />}>
-      <Grid2 container size={{ xs: 12 }} gap="20px">
+      <Grid2
+        container
+        size={{ xs: 12 }}
+        sx={{ gap: "20px" }}
+        padding={{ xs: 5, md: 0 }}
+      >
         {restaurants.map((restaurant, i) => (
-          <RestaurantCard key={i} restaurant={restaurant}></RestaurantCard>
+          <RestaurantCard key={i} restaurant={restaurant} />
         ))}
       </Grid2>
 
@@ -90,6 +95,7 @@ export default function Home() {
         alignItems="center"
       >
         <Button
+          autoFocus={true}
           variant="text"
           onClick={prevButtonHandler}
           disabled={page <= 1}
@@ -97,6 +103,7 @@ export default function Home() {
         />
         <Typography fontSize={24} children={`${page} / ${totalPages}`} />
         <Button
+          autoFocus={true}
           disabled={page >= totalPages}
           variant="text"
           onClick={nextButtonHandler}

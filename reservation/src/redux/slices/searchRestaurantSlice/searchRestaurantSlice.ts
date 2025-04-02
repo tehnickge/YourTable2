@@ -2,6 +2,7 @@ import { IGetRestaurantWithFilter, IRestaurantTitle } from "@/types/restaurant";
 import { Prisma } from "@prisma/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { restaurantAPI } from "./searchRestaurantAPI";
+import { BaseFilterData } from "@/components/BaseFilter";
 
 type Nullable<T> = {
   [K in keyof T]: T[K] | null;
@@ -11,18 +12,21 @@ type SearchRestaurantState = Omit<
   Required<IGetRestaurantWithFilter>,
   "kitchens"
 > & {
-  kitchens: string[];
+  kitchens: BaseFilterData[];
   restaurants: RestaurantWithKitchenZoneSchedule[];
   searchTips: IRestaurantTitle[];
   totalPages: number;
   totalCount: number;
+  allKitchens: BaseFilterData[];
+  allCities: string[];
 };
 
 export type RestaurantWithKitchenZoneSchedule = Prisma.RestaurantGetPayload<{
   include: {
-    kitchens: true;
+    kitchens: { include: { kitchen: true } };
     zones: true;
-    workShedules: true;
+    workShedules: { include: { day: true } };
+    address: true;
   };
 }>;
 
@@ -37,7 +41,7 @@ const initialState: SearchRestaurantState = {
   kitchens: [],
   searchTips: [],
   page: 1,
-  pageSize: 9,
+  pageSize: 12,
   city: null,
   minBill: 0,
   maxBill: null,
@@ -45,19 +49,21 @@ const initialState: SearchRestaurantState = {
   title: "",
   totalPages: 0,
   totalCount: 0,
+  allKitchens: [],
+  allCities: [],
 };
 const SearchRestaurantSlice = createSlice({
   name: "searchRestaurant",
   initialState: initialState,
   reducers: {
-    appendKitchen: (state, action: PayloadAction<string>) => {
-      if (!state.kitchens.includes(action.payload)) {
+    appendKitchen: (state, action: PayloadAction<BaseFilterData>) => {
+      if (!state.kitchens.some((kitchen) => kitchen.id === action.payload.id)) {
         state.kitchens.push(action.payload);
       }
     },
-    popKitchen: (state, action: PayloadAction<string>) => {
+    popKitchen: (state, action: PayloadAction<BaseFilterData>) => {
       state.kitchens = state.kitchens.filter(
-        (kitchen) => kitchen !== action.payload
+        (kitchen) => kitchen.id !== action.payload.id
       );
     },
     setCity: (state, action: PayloadAction<string>) => {
@@ -67,7 +73,7 @@ const SearchRestaurantSlice = createSlice({
       state.city = null;
     },
     setTitle: (state, action: PayloadAction<string>) => {
-      action.payload.length === 0
+      !action.payload.length
         ? (state.title = "")
         : (state.title = action.payload);
     },
@@ -122,6 +128,14 @@ const SearchRestaurantSlice = createSlice({
       }
     );
     builder.addMatcher(
+      restaurantAPI.endpoints.getAllTitle.matchRejected,
+      (state, action) => {
+        return {
+          ...state,
+        };
+      }
+    );
+    builder.addMatcher(
       restaurantAPI.endpoints.getAll.matchFulfilled,
       (state, action) => {
         return {
@@ -130,6 +144,65 @@ const SearchRestaurantSlice = createSlice({
           totalPages: action.payload.totalPages,
           totalCount: action.payload.totalCount,
         };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAll.matchPending,
+      (state, action) => {
+        return {
+          ...state,
+        };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAll.matchRejected,
+      (state, action) => {
+        return {
+          ...state,
+        };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAllKitchens.matchFulfilled,
+      (state, action) => {
+        return {
+          ...state,
+          allKitchens: action.payload,
+        };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAllKitchens.matchPending,
+      (state, action) => {
+        return {
+          ...state,
+        };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAllKitchens.matchRejected,
+      (state, action) => {
+        return {
+          ...state,
+        };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAllCities.matchFulfilled,
+      (state, action) => {
+        return { ...state, allCities: action.payload };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAllCities.matchPending,
+      (state, action) => {
+        return { ...state };
+      }
+    );
+    builder.addMatcher(
+      restaurantAPI.endpoints.getAllCities.matchRejected,
+      (state, action) => {
+        return { ...state };
       }
     );
   },

@@ -76,7 +76,7 @@ const getRestaurants = async (req: NextRequest) => {
     const restaurants = await prisma.restaurant.findMany({
       where,
       include: {
-        workShedules: true,
+        workShedules: { include: { day: true } },
         restaurantChain: { include: { company: true } },
         menus: true,
         address: true,
