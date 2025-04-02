@@ -1,3 +1,4 @@
+import { PayloadAction } from "@reduxjs/toolkit";
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
@@ -11,6 +12,7 @@ import * as Yup from "yup";
 import { handleValidationError } from "../../APIHelpers";
 import { ERROR_MESSAGES, HTTP_STATUS } from "@/types/HTTPStauts";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 
 // валидация данных юзера
 const userValidate: Yup.Schema<IUserValidSchemaRegistration> =
@@ -31,7 +33,7 @@ const userValidate: Yup.Schema<IUserValidSchemaRegistration> =
 
 const getUser = async (
   user: IUserValidSchemaRegistration
-): Promise<IUser | null> => {
+): Promise<Prisma.UserGetPayload<{}> | null> => {
   const checkedUser = await prisma.user.findFirst({
     where: {
       OR: [{ username: user.username }, { email: user.email }],
@@ -80,7 +82,7 @@ const auth = async (req: NextRequest) => {
       expiresIn: "1d",
     });
     // создание ответа
-    const response = NextResponse.json( userJWT , { status: HTTP_STATUS.OK });
+    const response = NextResponse.json(userJWT, { status: HTTP_STATUS.OK });
     // уставнавливаем jwt в coockies
     response.cookies.set("jwt_token", JWTToken, { httpOnly: true, path: "/" });
     return response;

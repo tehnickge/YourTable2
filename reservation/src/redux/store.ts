@@ -7,12 +7,14 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; //
 import { restaurantAPI } from "./slices/searchRestaurantSlice/searchRestaurantAPI";
 import searchRestaurantSlice from "./slices/searchRestaurantSlice/searchRestaurantSlice";
+import userSlice from "./slices/userSlice/userSlice";
 
 // Комбинируем редюсеры
 const rootReducer = combineReducers({
   test: testSlice,
   session: sessionSlice,
   searchRestaurant: searchRestaurantSlice,
+  user: userSlice,
   [authAPI.reducerPath]: authAPI.reducer,
   [restaurantAPI.reducerPath]: restaurantAPI.reducer,
 });
@@ -21,7 +23,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage, // Использует localStorage
-  whitelist: ["session"], // Сохраняем только session
+  whitelist: ["session", "user"], // Сохраняем только session и user
 };
 
 // Создаем persist reducer
