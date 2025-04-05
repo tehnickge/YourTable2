@@ -4,7 +4,7 @@ import BaseGrid from "@/components/BaseGrid";
 import RestaurantCard from "@/components/CardRestaurant";
 import Header from "@/components/Header";
 import {
-  useGetAllMutation,
+  useGetAllRestaurantMutation,
   useLazyGetAllKitchensQuery,
 } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import {
@@ -37,7 +37,8 @@ export default function Home() {
 
   const dispatch = useAppDispatch();
 
-  const [getRests, { isError, isLoading, status }] = useGetAllMutation();
+  const [getRests, { isError, isLoading, status }] =
+    useGetAllRestaurantMutation();
 
   const {
     city,
@@ -113,7 +114,7 @@ export default function Home() {
           disabled={page <= 1}
           children={<Typography fontSize={24} children={"<"} />}
         />
-        <Typography fontSize={24} children={`${page} / ${totalPages}`} />
+        <Typography fontSize={18} children={`${page} / ${totalPages}`} />
         <Button
           autoFocus={true}
           disabled={page >= totalPages}

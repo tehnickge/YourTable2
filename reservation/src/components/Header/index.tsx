@@ -16,7 +16,7 @@ import {
   useEffect,
 } from "react";
 import {
-  useGetAllMutation,
+  useGetAllRestaurantMutation,
   useLazyGetAllCitiesQuery,
   useLazyGetAllKitchensQuery,
   useLazyGetAllTitleQuery,
@@ -41,7 +41,7 @@ const Header = () => {
 
   const [getTips] = useLazyGetAllTitleQuery();
   const [getKitchens] = useLazyGetAllKitchensQuery();
-  const [getRestaurants] = useGetAllMutation();
+  const [getRestaurants] = useGetAllRestaurantMutation();
   const [getCities] = useLazyGetAllCitiesQuery();
   const {
     searchTips,
@@ -118,7 +118,7 @@ const Header = () => {
       size={12}
       className="bg-background-gradient p-4 sm:p-4 md:p-8 lg:p-12"
     >
-      <Container>
+      <Container maxWidth="md">
         <Grid2 container size={{ xs: 12 }}>
           {type === UserTypes.unauthorized ? (
             <Grid2>

@@ -13,7 +13,7 @@ export const restaurantAPI = createApi({
     baseUrl: "http://89.179.242.42:3000/api/restaurant",
   }),
   endpoints: (builder) => ({
-    getAll: builder.mutation<RestaurantsPagging, IGetRestaurantWithFilter>({
+    getAllRestaurant: builder.mutation<RestaurantsPagging, IGetRestaurantWithFilter>({
       query: (userData) => ({
         url: "getAll",
         method: "POST",
@@ -51,7 +51,7 @@ export const restaurantAPI = createApi({
 });
 
 export const {
-  useGetAllMutation,
+  useGetAllRestaurantMutation,
   useLazyGetByIdQuery,
   useLazyGetAllTitleQuery,
   useLazyGetAllKitchensQuery,
