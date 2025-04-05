@@ -37,7 +37,7 @@ export default function Home() {
 
   const dispatch = useAppDispatch();
 
-  const [getRests] = useGetAllMutation();
+  const [getRests, { isError, isLoading, status }] = useGetAllMutation();
 
   const {
     city,
@@ -76,6 +76,19 @@ export default function Home() {
 
   return (
     <BaseGrid header={<Header />}>
+      {isError && (
+        <Grid2>
+          <Typography
+            sx={{ hyphens: "auto", fontSize: 20, textAlign: "center" }}
+          >
+            Ошибка...
+          </Typography>
+          <Typography sx={{ hyphens: "auto", textAlign: "center" }}>
+            Попробуйте позже
+          </Typography>
+        </Grid2>
+      )}
+
       <Grid2
         container
         size={{ xs: 12 }}
@@ -86,7 +99,6 @@ export default function Home() {
           <RestaurantCard key={i} restaurant={restaurant} />
         ))}
       </Grid2>
-
       <Grid2
         size={{ xs: 12 }}
         container
