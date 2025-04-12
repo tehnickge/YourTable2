@@ -65,7 +65,6 @@ const getUserById = async (
     if (error instanceof Yup.ValidationError) {
       return handleValidationError(error);
     }
-    console.log(error);
     return NextResponse.json(
       { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
       { status: HTTP_STATUS.SERVER_ERROR }

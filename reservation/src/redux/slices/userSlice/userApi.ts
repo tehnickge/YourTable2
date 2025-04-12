@@ -11,7 +11,14 @@ export const userAPI = createApi({
         method: "GET",
       }),
     }),
+    mutationWishList: builder.mutation<number[], { id: number }>({
+      query: (data) => ({
+        url: "/wishList",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLazyGetUserQuery } = userAPI;
+export const { useLazyGetUserQuery, useMutationWishListMutation } = userAPI;

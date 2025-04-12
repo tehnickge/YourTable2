@@ -28,11 +28,13 @@ import { useAppSelector } from "@/redux/store";
 
 interface RestaurantCardProps {
   restaurant: RestaurantWithKitchenZoneSchedule;
+  onLikeClick: (restaurantId: number) => void;
 }
 
-const randomColors = ["red", "purple", "blue", "orange", "yellow"];
-
-export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+export default function RestaurantCard({
+  restaurant,
+  onLikeClick,
+}: RestaurantCardProps) {
   const [swiperInstance, setSwiperInstance] = useState<SwiperCore | null>(null);
   const { wishList } = useAppSelector((state) => state.user);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -51,6 +53,10 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
     }
   };
 
+  const handleLikeClick = () => {
+    onLikeClick(restaurant.id);
+  };
+
   return (
     <Card
       sx={{
@@ -65,21 +71,7 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
       className="relative overflow-hidden"
     >
       <Link href={`/restaurant/${restaurant.id}`}>
-        <CardHeader
-          avatar={
-            <Avatar
-              sx={{
-                bgcolor:
-                  randomColors[Math.floor(Math.random() * randomColors.length)],
-              }}
-              aria-label="recipe"
-            >
-              {restaurant.title[0].toUpperCase()}
-            </Avatar>
-          }
-          title={restaurant.title}
-          subheader={restaurant.shortInfo}
-        />
+        <CardHeader title={restaurant.title} subheader={restaurant.shortInfo} />
         <div
           ref={containerRef}
           onMouseMove={handleMouseMove}
@@ -154,13 +146,11 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
       <CardActions disableSpacing className="flex justify-between">
         <div className="flex">
           <IconButton
+            onClick={handleLikeClick}
             aria-label="add to favorites"
             color={wishList.includes(restaurant.id) ? "error" : "default"}
           >
             <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
           </IconButton>
         </div>
 

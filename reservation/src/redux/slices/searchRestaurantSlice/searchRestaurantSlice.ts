@@ -136,7 +136,7 @@ const SearchRestaurantSlice = createSlice({
       }
     );
     builder.addMatcher(
-      restaurantAPI.endpoints.getAll.matchFulfilled,
+      restaurantAPI.endpoints.getAllRestaurant.matchFulfilled,
       (state, action) => {
         return {
           ...state,
@@ -147,7 +147,7 @@ const SearchRestaurantSlice = createSlice({
       }
     );
     builder.addMatcher(
-      restaurantAPI.endpoints.getAll.matchPending,
+      restaurantAPI.endpoints.getAllRestaurant.matchPending,
       (state, action) => {
         return {
           ...state,
@@ -155,7 +155,7 @@ const SearchRestaurantSlice = createSlice({
       }
     );
     builder.addMatcher(
-      restaurantAPI.endpoints.getAll.matchRejected,
+      restaurantAPI.endpoints.getAllRestaurant.matchRejected,
       (state, action) => {
         return {
           ...state,

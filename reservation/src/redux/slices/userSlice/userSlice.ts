@@ -43,12 +43,34 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      userAPI.endpoints.getUser.matchFulfilled,
-      (state, action) => {
+    builder
+      .addMatcher(userAPI.endpoints.getUser.matchFulfilled, (state, action) => {
         return { ...state, ...action.payload };
-      }
-    );
+      })
+      .addMatcher(userAPI.endpoints.getUser.matchPending, (state, action) => {
+        return { ...state };
+      })
+      .addMatcher(userAPI.endpoints.getUser.matchRejected, (state, action) => {
+        return { ...state };
+      })
+      .addMatcher(
+        userAPI.endpoints.mutationWishList.matchFulfilled,
+        (state, action) => {
+          return { ...state, wishList: action.payload };
+        }
+      )
+      .addMatcher(
+        userAPI.endpoints.mutationWishList.matchPending,
+        (state, action) => {
+          return { ...state };
+        }
+      )
+      .addMatcher(
+        userAPI.endpoints.mutationWishList.matchPending,
+        (state, action) => {
+          return { ...state };
+        }
+      );
   },
 });
 

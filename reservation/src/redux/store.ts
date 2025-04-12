@@ -37,7 +37,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
       authAPI.middleware,
-      restaurantAPI.middleware
+      restaurantAPI.middleware,
+      userAPI.middleware
     ),
 });
 

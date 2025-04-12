@@ -18,7 +18,6 @@ const changeWishList = async (req: NextRequest) => {
         }
       );
     }
-
     const user = await getUserPayload(token);
 
     if (!user) {
@@ -52,7 +51,10 @@ const changeWishList = async (req: NextRequest) => {
       ? currentWishList.wishList.filter((wish) => wish !== body.id)
       : [...currentWishList.wishList, body.id];
 
-    const updatedUser = await prisma.user.update({
+    const { wishList } = await prisma.user.update({
+      select: {
+        wishList: true,
+      },
       where: {
         id: user.id,
       },
@@ -61,8 +63,13 @@ const changeWishList = async (req: NextRequest) => {
       },
     });
 
-    return NextResponse.json(updatedUser, { status: HTTP_STATUS.OK });
-  } catch (e) {}
+    return NextResponse.json(wishList, { status: HTTP_STATUS.OK });
+  } catch (e) {
+    return NextResponse.json(
+      { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
+      { status: HTTP_STATUS.SERVER_ERROR }
+    );
+  }
 };
 
 export { changeWishList as POST };

@@ -12,7 +12,7 @@ const BaseGrid: React.FC<BaseGridProps> = ({ children, header, footer }) => {
     <Grid2 container size={12} justifyContent="center">
       {/** Header */}
       {header}
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         {/** MAIN */}
         <Grid2
           container
