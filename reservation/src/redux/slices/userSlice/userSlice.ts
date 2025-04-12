@@ -1,12 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { userAPI } from "./userApi";
 
-type UserState = {
+export type UserState = {
   id: number;
   username: string;
   email: string;
   type: string;
-
-  password: string;
   photo: string | null;
   historyRest: number[];
   wishList: number[];
@@ -19,7 +18,6 @@ const initialState: UserState = {
   username: "",
   email: "",
   type: "",
-  password: "",
   photo: null,
   historyRest: [],
   wishList: [],
@@ -29,9 +27,30 @@ const initialState: UserState = {
 const userSlice = createSlice({
   name: "user",
   initialState: initialState,
-  reducers: {},
-  extraReducers: (builder) => {},
+  reducers: {
+    resetUserState: (state, action: PayloadAction<void>) => {
+      return {
+        id: 0,
+        username: "",
+        email: "",
+        type: "",
+        photo: null,
+        historyRest: [],
+        wishList: [],
+        recommendations: [],
+        phoneNumber: null,
+      };
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      userAPI.endpoints.getUser.matchFulfilled,
+      (state, action) => {
+        return { ...state, ...action.payload };
+      }
+    );
+  },
 });
 
-export const {} = userSlice.actions;
+export const { resetUserState } = userSlice.actions;
 export default userSlice.reducer;

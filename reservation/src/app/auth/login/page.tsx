@@ -16,6 +16,7 @@ import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
+import { useLazyGetUserQuery } from "@/redux/slices/userSlice/userApi";
 
 const LoginPage: React.FC = () => {
   //   username: "nikita12",
@@ -28,11 +29,11 @@ const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm();
   const [login, { isLoading, error, isSuccess, data }] = useLoginMutation();
+  const [getUser] = useLazyGetUserQuery();
   const { username, type } = useAppSelector((state) => state.session);
   const onSubmit = (data: any) => {
-    console.log("Login data:", data);
     login(data).then((res) => {
-      console.log(res);
+      getUser(res.data?.id.toString() || "");
     });
   };
 

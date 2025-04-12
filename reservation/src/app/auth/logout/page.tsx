@@ -4,7 +4,8 @@ import {
   useLazyLogoutQuery,
   useRegisterMutation,
 } from "@/redux/slices/sessionSlice/sessionAPI";
-import { useAppSelector } from "@/redux/store";
+import { resetUserState } from "@/redux/slices/userSlice/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { Button, Grid2, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -14,9 +15,11 @@ const LogoutPage = () => {
   const [logout, { data, isError, isLoading, isSuccess, isFetching }] =
     useLazyLogoutQuery();
   const { type, username } = useAppSelector((state) => state.session);
+  const dispatch = useAppDispatch();
 
   const logoutClickHandler = () => {
     logout(null);
+    dispatch(resetUserState());
   };
 
   useEffect(() => {

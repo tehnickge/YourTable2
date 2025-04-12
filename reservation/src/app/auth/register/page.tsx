@@ -16,6 +16,7 @@ import { useRegisterMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
+import { useLazyGetUserQuery } from "@/redux/slices/userSlice/userApi";
 
 const RegisterPage: React.FC = () => {
   //   username: "nikita12",
@@ -30,8 +31,11 @@ const RegisterPage: React.FC = () => {
   const [register, { isLoading, error, isSuccess, data }] =
     useRegisterMutation();
   const { username, type } = useAppSelector((state) => state.session);
+  const [getUser] = useLazyGetUserQuery();
   const onSubmit = (data: any) => {
-    register(data);
+    register(data).then((res) => {
+      if (res.data?.id) getUser(res.data?.id.toString() || "");
+    });
   };
 
   useEffect(() => {

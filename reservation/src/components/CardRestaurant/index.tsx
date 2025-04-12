@@ -24,6 +24,7 @@ import "swiper/css/pagination";
 import { RestaurantWithKitchenZoneSchedule } from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
 import Link from "next/link";
 import type SwiperCore from "swiper";
+import { useAppSelector } from "@/redux/store";
 
 interface RestaurantCardProps {
   restaurant: RestaurantWithKitchenZoneSchedule;
@@ -33,6 +34,7 @@ const randomColors = ["red", "purple", "blue", "orange", "yellow"];
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   const [swiperInstance, setSwiperInstance] = useState<SwiperCore | null>(null);
+  const { wishList } = useAppSelector((state) => state.user);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -151,7 +153,10 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
 
       <CardActions disableSpacing className="flex justify-between">
         <div className="flex">
-          <IconButton aria-label="add to favorites">
+          <IconButton
+            aria-label="add to favorites"
+            color={wishList.includes(restaurant.id) ? "error" : "default"}
+          >
             <FavoriteIcon />
           </IconButton>
           <IconButton aria-label="share">

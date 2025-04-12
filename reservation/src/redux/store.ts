@@ -8,6 +8,7 @@ import storage from "redux-persist/lib/storage"; //
 import { restaurantAPI } from "./slices/searchRestaurantSlice/searchRestaurantAPI";
 import searchRestaurantSlice from "./slices/searchRestaurantSlice/searchRestaurantSlice";
 import userSlice from "./slices/userSlice/userSlice";
+import { userAPI } from "./slices/userSlice/userApi";
 
 // Комбинируем редюсеры
 const rootReducer = combineReducers({
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   user: userSlice,
   [authAPI.reducerPath]: authAPI.reducer,
   [restaurantAPI.reducerPath]: restaurantAPI.reducer,
+  [userAPI.reducerPath]: userAPI.reducer,
 });
 
 // Конфиг для redux-persist
