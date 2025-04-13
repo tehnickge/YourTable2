@@ -9,6 +9,7 @@ import { restaurantAPI } from "./slices/searchRestaurantSlice/searchRestaurantAP
 import searchRestaurantSlice from "./slices/searchRestaurantSlice/searchRestaurantSlice";
 import userSlice from "./slices/userSlice/userSlice";
 import { userAPI } from "./slices/userSlice/userApi";
+import restaurantSlice from "./slices/restaurantSlice/restaurantSlice";
 
 // Комбинируем редюсеры
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   session: sessionSlice,
   searchRestaurant: searchRestaurantSlice,
   user: userSlice,
+  restaurant: restaurantSlice,
   [authAPI.reducerPath]: authAPI.reducer,
   [restaurantAPI.reducerPath]: restaurantAPI.reducer,
   [userAPI.reducerPath]: userAPI.reducer,

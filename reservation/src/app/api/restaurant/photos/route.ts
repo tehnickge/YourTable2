@@ -19,7 +19,6 @@ const addPhotos = async (req: NextRequest) => {
       req.headers.get("Authorization")?.split(" ")[1];
 
     if (!token) {
-      //   return NextResponse.redirect(new URL("api/login", req.url));
       return NextResponse.json(
         { error: ERROR_MESSAGES.BAD_AUTHORIZED },
         {
@@ -43,9 +42,10 @@ const addPhotos = async (req: NextRequest) => {
         }
       );
     }
+
     // получение объекта из form-data
     const formData = await req.formData();
-
+    console.log("aaa");
     // Получаем все файлы с полем "photo"
     const photoFiles = formData.getAll("photo");
 
@@ -118,7 +118,12 @@ const addPhotos = async (req: NextRequest) => {
     });
 
     return NextResponse.json(updatedRestaurant, { status: HTTP_STATUS.OK });
-  } catch (e) {}
+  } catch (e) {
+    return NextResponse.json(
+      { error: e },
+      { status: HTTP_STATUS.SERVER_ERROR }
+    );
+  }
 };
 
 export { addPhotos as POST };

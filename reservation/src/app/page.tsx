@@ -11,11 +11,9 @@ import {
   setMaxBill,
   setPage,
 } from "@/redux/slices/searchRestaurantSlice/searchRestaurantSlice";
-import { useLoginMutation } from "@/redux/slices/sessionSlice/sessionAPI";
 import { useMutationWishListMutation } from "@/redux/slices/userSlice/userApi";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { UserTypes } from "@/types/user";
-import { Button, Card, CardContent, Grid2, Typography } from "@mui/material";
+import { Button, Grid2, Typography } from "@mui/material";
 import { useEffect } from "react";
 
 export default function Home() {
