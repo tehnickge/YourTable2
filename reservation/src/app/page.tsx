@@ -109,7 +109,10 @@ export default function Home() {
           disabled={page <= 1}
           children={<Typography fontSize={24} children={"<"} />}
         />
-        <Typography fontSize={18} children={`${page} / ${totalPages}`} />
+        <Typography
+          fontSize={18}
+          children={`${totalPages ? page : 0} / ${totalPages}`}
+        />
         <Button
           autoFocus={true}
           disabled={page >= totalPages}
