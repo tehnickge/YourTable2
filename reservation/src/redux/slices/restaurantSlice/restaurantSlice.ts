@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { restaurantAPI } from "../searchRestaurantSlice/searchRestaurantAPI";
 
 type RestaurantState = {
@@ -70,6 +70,12 @@ type RestaurantState = {
     timeBegin: string;
     timeEnd: string;
   }[];
+
+  rentModal: {
+    activeDate: Date;
+    isOpen: boolean;
+    activeSlot: number;
+  };
 };
 
 const initialState: RestaurantState = {
@@ -100,21 +106,41 @@ const initialState: RestaurantState = {
   },
   menus: [],
   workShedules: [],
+  rentModal: {
+    isOpen: false,
+    activeSlot: 0,
+    activeDate: new Date(),
+  },
 };
 
 const restaurantSlice = createSlice({
   name: "restaurant",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setIsOpenModal: (state, action: PayloadAction<undefined>) => {
+      state.rentModal.isOpen = !state.rentModal.isOpen;
+    },
+    setActiveSlot: (state, action: PayloadAction<number>) => {
+      state.rentModal.activeSlot = action.payload;
+    },
+    resetModalState: (state, action: PayloadAction<undefined>) => {
+      state.rentModal = {
+        isOpen: false,
+        activeSlot: 0,
+        activeDate: new Date(),
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       restaurantAPI.endpoints.getByRestaurantId.matchFulfilled,
       (state, action) => {
-        return { ...action.payload };
+        return { ...state, ...action.payload };
       }
     );
   },
 });
 
-export const {} = restaurantSlice.actions;
+export const { setIsOpenModal, setActiveSlot, resetModalState } =
+  restaurantSlice.actions;
 export default restaurantSlice.reducer;

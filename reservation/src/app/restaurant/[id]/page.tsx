@@ -7,12 +7,18 @@ import { Button, Grid2, Rating, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel, Pagination } from "swiper/modules";
+import { Grid, Mousewheel, Pagination } from "swiper/modules";
+import CurrencyRubleRoundedIcon from "@mui/icons-material/CurrencyRubleRounded";
 import type SwiperCore from "swiper";
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/pagination";
 import { DateTime } from "luxon";
+import RentModal from "./RentModal";
+import {
+  setActiveSlot,
+  setIsOpenModal,
+} from "@/redux/slices/restaurantSlice/restaurantSlice";
 
 const RestaurantPage = () => {
   const params = useParams();
@@ -39,6 +45,7 @@ const RestaurantPage = () => {
     shortInfo,
     zones,
     workShedules,
+    rentModal,
   } = useAppSelector((state) => state.restaurant);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -69,196 +76,354 @@ const RestaurantPage = () => {
     }));
   }, [workShedules]);
 
+  const handleSlotClick = (id: number) => {
+    dispatch(setActiveSlot(id));
+    dispatch(setIsOpenModal());
+  };
+
   return (
     <BaseGrid header={<SmallHeader />}>
-      <Grid2
-        size={12}
-        container
-        justifyContent="center"
-        alignContent="center"
-        justifyItems="center"
-      >
-        <Grid2
-          container
-          spacing={2}
-          size={{ xs: 12, sm: 12, md: 12 }}
-          justifyContent="center"
-          alignContent="center"
-          alignItems="center"
-        >
+      <Grid2 container spacing={4} sx={{ padding: { xs: 2, md: 4 } }}>
+        {/* Hero Section with Image Slider */}
+        <Grid2 size={12}>
           <div
             ref={containerRef}
             onMouseMove={handleMouseMove}
-            style={{
-              position: "relative",
-              width: "100%",
-              justifyContent: "center",
-              justifyItems: "center",
-              alignContent: "center",
-              alignItems: "center",
-              display: "flex",
-              flexDirection: "column",
-            }}
+            className="relative w-full flex flex-col items-center"
           >
-            <Grid2 className="z-10 absolute top-2 pt-2 pr-2 pl-2 bg-white rounded-full shadow-slate-600 shadow-sm">
+            {/* Rating Badge */}
+            <div className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md">
               <Rating
-                name="size-medium"
-                onChange={(e, a) => {}}
                 value={Number(rating)}
-                defaultValue={Number(rating)}
+                precision={0.5}
                 readOnly
+                sx={{
+                  "& .MuiRating-iconFilled": {
+                    color: "#FFD700",
+                  },
+                }}
               />
-            </Grid2>
+            </div>
 
+            {/* Image Slider */}
             <Swiper
               onSwiper={setSwiperInstance}
               modules={[Pagination]}
-              pagination={{ clickable: true }}
+              pagination={{
+                clickable: true,
+                bulletClass: "swiper-pagination-bullet bg-white",
+              }}
               spaceBetween={0}
               slidesPerView={1}
-              className="relative bg-white w-full rounded-md h-48 sm:h-60 md:h-80 xl:h-96"
+              className="w-full rounded-xl overflow-hidden shadow-lg"
+              style={{
+                height: "clamp(300px, 60vh, 800px)",
+              }}
             >
               {photos.map((photo, i) => (
-                <SwiperSlide key={i}>
+                <SwiperSlide key={i} className="relative">
                   <Image
                     src={photo}
-                    alt={`photo-${i}`}
-                    layout="fill"
-                    sizes="(max-width: 1200px) 100vw, (max-width: 2200px) 100vw"
-                    loading="lazy"
-                    objectFit="cover"
+                    alt={`${title} - Photo ${i + 1}`}
+                    fill
+                    priority={i === 0}
+                    quality={90}
+                    className="object-cover"
                   />
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            {/* Restaurant Title */}
+            <div className="w-full mt-4 bg-white rounded-lg p-4 shadow-sm">
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                  color: "primary.main",
+                  hyphens: "auto",
+                  wordWrap: "break-word",
+                  fontSize: {
+                    xs: "36px",
+                    md: "48px",
+                    lg: "60px",
+                  },
+                }}
+              >
+                {title.toUpperCase()}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  textAlign: "center",
+                  color: "text.secondary",
+                  hyphens: "auto",
+                  wordWrap: "break-word",
+                }}
+              >
+                {address.fullAddress}
+              </Typography>
+            </div>
           </div>
-          <Typography
-            variant="h2"
-            sx={{ justifyContent: "center", textAlign: "center" }}
-            children={title.toUpperCase()}
-          />
         </Grid2>
 
-        <Grid2
-          container
-          alignContent="center"
-          justifyContent="center"
-          textAlign="center"
-          justifyItems="center"
-        >
-          <Typography variant="h4" textAlign="center">
-            Рассписание
-          </Typography>
-        </Grid2>
-
-        <Grid2
-          size={{ xs: 12, sm: 12, md: 12 }}
-          spacing={1}
-          container
-          justifyContent="space-between"
-        >
-          {formatWorkShedules.map((workDay, i) => (
-            <Grid2
-              key={i}
-              container
+        {/* Description Section */}
+        <Grid2 size={12}>
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <Typography
+              variant="h4"
               sx={{
-                backgroundColor: "white",
-                padding: "16px",
-                borderRadius: "0.375rem",
+                mb: 3,
+                textAlign: "center",
+                fontWeight: 600,
+                color: "primary.dark",
+                hyphens: "auto",
+                wordWrap: "break-word",
               }}
             >
-              <Typography children={workDay.day.title} />
-              <Typography>С {workDay.timeBegin}</Typography>
-              <Typography>до {workDay.timeEnd}</Typography>
-            </Grid2>
-          ))}
-        </Grid2>
-
-        <Grid2
-          container
-          alignContent="center"
-          justifyContent="center"
-          textAlign="center"
-          justifyItems="center"
-        >
-          <Typography variant="h4" textAlign="center">
-            Меню
-          </Typography>
-        </Grid2>
-
-        <Grid2 size={{ xs: 12, sm: 12, md: 12 }} spacing={1} container>
-          {menus.map((menu, i) => (
-            <Grid2 key={i} container>
-              <Image
-                src={menu.photo || ""}
-                alt={`photo-${i}`}
-                width={200}
-                height={150}
-                loading="lazy"
-                objectFit="cover"
-              />
-              {menu.price}
-              {menu.titleDish}
-            </Grid2>
-          ))}
-        </Grid2>
-
-        <Grid2
-          container
-          alignContent="center"
-          justifyContent="center"
-          textAlign="center"
-          justifyItems="center"
-        >
-          <Typography variant="h4" textAlign="center">
-            Столы
-          </Typography>
-        </Grid2>
-
-        <Grid2
-          size={{ xs: 12, sm: 12, md: 12 }}
-          spacing={1}
-          container
-          justifyContent="center"
-        >
-          {zones.map((zone, i) => (
-            <Grid2
-              key={i}
-              container
-              direction="column"
-              justifyContent="center"
-              alignContent="center"
-              textAlign="center"
-              spacing={1}
-              padding={2}
+              О нас
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1.1rem",
+                lineHeight: 1.6,
+                hyphens: "auto",
+                wordWrap: "break-word",
+              }}
             >
-              <Typography variant="h5">{zone.title}</Typography>
-              <Typography variant="h6">{zone.description}</Typography>
+              {info}
+            </Typography>
+          </div>
+        </Grid2>
 
-              <Grid2 container spacing={1}>
-                {zone.slots.map((slot, i) => (
-                  <Grid2
+        {/* Info Cards */}
+        <Grid2 size={12} container spacing={3}>
+          {/* Средний чек */}
+          <Grid2
+            size={{ xs: 12, md: 6 }}
+            container
+            sx={{ display: "flex", flexDirection: "row" }}
+          >
+            <div className="bg-gradient-to-r from-blue-400 to-blue-300 rounded-lg p-6 text-white shadow-md w-full h-full">
+              <Typography
+                variant="h6"
+                sx={{ mb: 1, hyphens: "auto", wordWrap: "break-word" }}
+              >
+                Средний чек
+              </Typography>
+              <div className="flex items-center flex-1">
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 700,
+                    hyphens: "auto",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  {averageBill}
+                </Typography>
+                <CurrencyRubleRoundedIcon fontSize="large" />
+              </div>
+            </div>
+          </Grid2>
+
+          {/* Кухни */}
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <div className="bg-gradient-to-r from-green-400 to-green-300 rounded-lg p-6 text-white shadow-md w-full h-full">
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 2,
+                  hyphens: "auto",
+                  wordWrap: "break-word",
+                }}
+              >
+                Кухни
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                {kitchens.map((kitchen, i) => (
+                  <span
                     key={i}
-                    container
-                    direction="column"
-                    sx={{ backgroundColor: "white" }}
-                    spacing={1}
-                    borderRadius="0.375rem"
-                    padding={1}
+                    className="px-3 py-1 bg-gradient-to-r from-green-500/30 to-green-600/40 backdrop-blur-sm rounded-full text-sm font-medium"
                   >
-                    <Typography className="text-right text-zinc-400">
-                      №{slot.number}
-                    </Typography>
-                    <Typography>{slot.description}</Typography>
-                    <Typography>На {slot.maxCountPeople} персон</Typography>
-                    <Button>Забронировать</Button>
-                  </Grid2>
+                    {kitchen.kitchen.title}
+                  </span>
                 ))}
-              </Grid2>
-            </Grid2>
-          ))}
+              </div>
+            </div>
+          </Grid2>
+        </Grid2>
+
+        {/* Working Hours */}
+        <Grid2 size={12}>
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <Typography
+              variant="h4"
+              sx={{
+                mb: 4,
+                textAlign: "center",
+                fontWeight: 600,
+                color: "primary.dark",
+              }}
+            >
+              Часы работы
+            </Typography>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              {formatWorkShedules.map((workDay, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-lg p-3 text-center hover:shadow-md transition-shadow"
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      fontWeight: 600,
+                      color: "primary.dark",
+                      hyphens: "auto",
+                      wordWrap: "break-word",
+                    }}
+                  >
+                    {workDay.day.title}
+                  </Typography>
+                  <Typography variant="body2">
+                    {workDay.timeBegin} - {workDay.timeEnd}
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Grid2>
+
+        {/* Menu Section */}
+
+        <Grid2 size={12}>
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <Typography
+              variant="h4"
+              sx={{
+                mb: 4,
+                textAlign: "center",
+                fontWeight: 600,
+                color: "primary.dark",
+              }}
+            >
+              Меню
+            </Typography>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {menus.map((menu, i) => (
+                <div
+                  key={i}
+                  className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all"
+                >
+                  <div className="aspect-w-4 aspect-h-3 bg-white">
+                    <Image
+                      src={menu.photo || "/placeholder-food.jpg"}
+                      alt={menu.titleDish || ""}
+                      width={400}
+                      height={300}
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                      {menu.titleDish}
+                    </Typography>
+                    <div className="flex justify-between items-center">
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        "menu.titleDish"
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 700, color: "primary.main" }}
+                      >
+                        {menu.price}₽
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Grid2>
+
+        {/* Tables Section */}
+        <Grid2 size={12}>
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <Typography
+              variant="h4"
+              sx={{
+                mb: 4,
+                textAlign: "center",
+                fontWeight: 600,
+                color: "primary.dark",
+              }}
+            >
+              Бронирование столов
+            </Typography>
+
+            {zones.map((zone, i) => (
+              <div key={i} className="mb-8 last:mb-0">
+                <Typography
+                  variant="h5"
+                  sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                >
+                  {zone.title}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  {zone.description}
+                </Typography>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {zone.slots.map((slot, i) => (
+                    <div
+                      key={i}
+                      className="shadow-sm bg-white rounded-lg p-4 hover:border-primary.main transition-colors"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 600 }}
+                        >
+                          Стол №{slot.number}
+                        </Typography>
+                        <span className="px-2 py-1 bg-primary.light text-primary.contrastText rounded-full text-xs">
+                          {slot.maxCountPeople} чел.
+                        </span>
+                      </div>
+                      <Typography
+                        variant="body2"
+                        sx={{ mb: 3, color: "text.secondary", hyphens: "auto" }}
+                      >
+                        {slot.description}
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => handleSlotClick(slot.id)}
+                        sx={{
+                          backgroundColor: "primary.main",
+                          "&:hover": {
+                            backgroundColor: "primary.dark",
+                          },
+                        }}
+                      >
+                        Забронировать
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </Grid2>
       </Grid2>
+
+      <RentModal />
     </BaseGrid>
   );
 };
