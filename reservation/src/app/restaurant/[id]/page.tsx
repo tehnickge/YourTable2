@@ -3,9 +3,9 @@ import BaseGrid from "@/components/BaseGrid";
 import SmallHeader from "@/components/Header/SmallHeader";
 import { useLazyGetByRestaurantIdQuery } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { Button, Grid2, Rating, Typography } from "@mui/material";
+import { Button, Grid2, Rating, Skeleton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Grid, Mousewheel, Pagination } from "swiper/modules";
 import CurrencyRubleRoundedIcon from "@mui/icons-material/CurrencyRubleRounded";
@@ -71,8 +71,14 @@ const RestaurantPage = () => {
   const formatWorkShedules = useMemo(() => {
     return workShedules.map((workDay) => ({
       ...workDay,
-      timeBegin: DateTime.fromISO(workDay.timeBegin).toFormat("hh:mm"),
-      timeEnd: DateTime.fromISO(workDay.timeEnd).toFormat("hh:mm"),
+      timeBegin: DateTime.fromISO(workDay.timeBegin, {
+        locale: "ru",
+        zone: "Europe/Moscow",
+      }).toFormat("HH:mm"),
+      timeEnd: DateTime.fromISO(workDay.timeEnd, {
+        locale: "ru",
+        zone: "Europe/Moscow",
+      }).toFormat("HH:mm"),
     }));
   }, [workShedules]);
 
@@ -85,6 +91,7 @@ const RestaurantPage = () => {
     <BaseGrid header={<SmallHeader />}>
       <Grid2 container spacing={4} sx={{ padding: { xs: 2, md: 4 } }}>
         {/* Hero Section with Image Slider */}
+
         <Grid2 size={12}>
           <div
             ref={containerRef}

@@ -1,5 +1,10 @@
+import { Settings } from "luxon";
 import "./globals.css";
 import StateProvider from "./rootLayout";
+
+// Глобальная конфигурация Luxon
+Settings.defaultZone = "Europe/Moscow";
+Settings.defaultLocale = "ru";
 
 export default function RootLayout({
   children,

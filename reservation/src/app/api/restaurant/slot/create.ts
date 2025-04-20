@@ -7,6 +7,7 @@ import { IUserPayload } from "@/types/user";
 import { handleValidationError } from "../../APIHelpers";
 import { DateTime, Duration, Interval, Info, Settings } from "luxon";
 import { ISlotCreateSchema } from "@/types/slot";
+
 const slotSchema: Yup.Schema<ISlotCreateSchema> = Yup.object().shape({
   number: Yup.string().required(),
   description: Yup.string().optional(),

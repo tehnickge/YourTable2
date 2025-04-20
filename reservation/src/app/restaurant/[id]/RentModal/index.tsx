@@ -29,8 +29,6 @@ const RentModal = () => {
     dispatch(setIsOpenModal());
   }, [rentModal.isOpen]);
 
-  console.log(rentModal);
-
   useEffect(() => {
     if (!rentModal.isOpen) dispatch(resetModalState());
   }, [rentModal.isOpen, dispatch]);
@@ -43,3 +41,6 @@ const RentModal = () => {
 };
 
 export default RentModal;
+function lazy(arg0: () => Promise<typeof import("@/components/Tips/Tips")>) {
+  throw new Error("Function not implemented.");
+}

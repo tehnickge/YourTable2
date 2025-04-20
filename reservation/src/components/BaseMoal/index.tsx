@@ -1,4 +1,5 @@
 import { Box, Modal, Typography } from "@mui/material";
+import React from "react";
 import { ReactNode, useState } from "react";
 
 const style = {
