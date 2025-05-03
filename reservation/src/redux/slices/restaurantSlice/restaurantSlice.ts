@@ -72,9 +72,12 @@ type RestaurantState = {
   }[];
 
   rentModal: {
-    activeDate: Date;
+    activeDate: Date | null;
     isOpen: boolean;
     activeSlot: number;
+    avaibleTimes: string[];
+    selectTimeStart: string;
+    selectTimeEnd: string;
   };
 };
 
@@ -109,7 +112,10 @@ const initialState: RestaurantState = {
   rentModal: {
     isOpen: false,
     activeSlot: 0,
-    activeDate: new Date(),
+    activeDate: null,
+    avaibleTimes: [],
+    selectTimeStart: "",
+    selectTimeEnd: "",
   },
 };
 
@@ -127,20 +133,71 @@ const restaurantSlice = createSlice({
       state.rentModal = {
         isOpen: false,
         activeSlot: 0,
-        activeDate: new Date(),
+        activeDate: null,
+        avaibleTimes: [],
+        selectTimeStart: "",
+        selectTimeEnd: "",
       };
+    },
+    setActiveDate: (state, action: PayloadAction<Date | null>) => {
+      state.rentModal.activeDate = action.payload;
+    },
+    setTimeStart: (state, action: PayloadAction<string>) => {
+      state.rentModal.selectTimeStart = action.payload;
+      state.rentModal.selectTimeEnd = "";
+    },
+    setTimeEnd: (state, action: PayloadAction<string>) => {
+      state.rentModal.selectTimeEnd = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      restaurantAPI.endpoints.getByRestaurantId.matchFulfilled,
-      (state, action) => {
-        return { ...state, ...action.payload };
-      }
-    );
+    builder
+      .addMatcher(
+        restaurantAPI.endpoints.getByRestaurantId.matchFulfilled,
+        (state, action) => {
+          return { ...state, ...action.payload };
+        }
+      )
+      .addMatcher(
+        restaurantAPI.endpoints.getAvailableTime.matchFulfilled,
+        (state, action) => {
+          return {
+            ...state,
+            rentModal: {
+              ...state.rentModal,
+              selectTimeStart: "",
+              selectTimeEnd: "",
+            },
+          };
+        }
+      )
+      .addMatcher(
+        restaurantAPI.endpoints.getAvailableTime.matchFulfilled,
+        (state, action) => {
+          return {
+            ...state,
+            rentModal: { ...state.rentModal, avaibleTimes: action.payload },
+          };
+        }
+      )
+      .addMatcher(
+        restaurantAPI.endpoints.getAvailableTime.matchRejected,
+        (state, action) => {
+          return {
+            ...state,
+            rentModal: { ...state.rentModal, avaibleTimes: [] },
+          };
+        }
+      );
   },
 });
 
-export const { setIsOpenModal, setActiveSlot, resetModalState } =
-  restaurantSlice.actions;
+export const {
+  setIsOpenModal,
+  setActiveSlot,
+  resetModalState,
+  setActiveDate,
+  setTimeStart,
+  setTimeEnd,
+} = restaurantSlice.actions;
 export default restaurantSlice.reducer;

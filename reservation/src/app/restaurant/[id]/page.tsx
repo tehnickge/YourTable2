@@ -1,7 +1,10 @@
 "use client";
 import BaseGrid from "@/components/BaseGrid";
 import SmallHeader from "@/components/Header/SmallHeader";
-import { useLazyGetByRestaurantIdQuery } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
+import {
+  useGetAvailableTimeMutation,
+  useLazyGetByRestaurantIdQuery,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { Button, Grid2, Rating, Skeleton, Typography } from "@mui/material";
 import { useParams } from "next/navigation";
@@ -24,6 +27,7 @@ const RestaurantPage = () => {
   const params = useParams();
   const dispatch = useAppDispatch();
   const [fetchRestaurantById, data] = useLazyGetByRestaurantIdQuery();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [swiperInstance, setSwiperInstance] = useState<SwiperCore | null>(null);
 
@@ -69,17 +73,19 @@ const RestaurantPage = () => {
   }, [params.id, params]);
 
   const formatWorkShedules = useMemo(() => {
-    return workShedules.map((workDay) => ({
-      ...workDay,
-      timeBegin: DateTime.fromISO(workDay.timeBegin, {
-        locale: "ru",
-        zone: "Europe/Moscow",
-      }).toFormat("HH:mm"),
-      timeEnd: DateTime.fromISO(workDay.timeEnd, {
-        locale: "ru",
-        zone: "Europe/Moscow",
-      }).toFormat("HH:mm"),
-    }));
+    return workShedules
+      .map((workDay) => ({
+        ...workDay,
+        timeBegin: DateTime.fromISO(workDay.timeBegin, {
+          locale: "ru",
+          zone: "Europe/Moscow",
+        }).toFormat("HH:mm"),
+        timeEnd: DateTime.fromISO(workDay.timeEnd, {
+          locale: "ru",
+          zone: "Europe/Moscow",
+        }).toFormat("HH:mm"),
+      }))
+      .sort((prev, next) => prev.day.id - next.day.id);
   }, [workShedules]);
 
   const handleSlotClick = (id: number) => {
