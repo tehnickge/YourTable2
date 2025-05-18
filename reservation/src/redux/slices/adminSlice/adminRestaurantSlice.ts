@@ -57,10 +57,12 @@ const adminRestaurantSlice = createSlice({
       state.restaurant.shortInfo = action.payload;
     },
     setMaxHoursToRentToUpdate: (state, action: PayloadAction<number>) => {
-      state.restaurant.maxHoursToRent = action.payload;
+      state.restaurant.maxHoursToRent =
+        Number(action.payload) > 0 ? action.payload : 1;
     },
     setAverageBillToUpdate: (state, action: PayloadAction<number>) => {
-      state.restaurant.averageBill = action.payload;
+      state.restaurant.averageBill =
+        Number(action.payload) > 0 ? action.payload : 100;
     },
   },
   extraReducers: (builder) => {
