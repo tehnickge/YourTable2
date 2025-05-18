@@ -163,7 +163,7 @@ export const createRent = async (req: NextRequest) => {
     const timeStart = DateTime.fromJSDate(validRent.timeStart);
     const timeEnd = DateTime.fromJSDate(validRent.timeEnd);
     const timeNow = DateTime.now();
-    const maxHoursToRent = await getMaxHoursToRent(validRent.slotId);
+    const maxHoursToRent = await getMaxHoursToRent(validRent.restaurantId);
     const shedule = await getSheduleToDate(
       validRent.restaurantId,
       timeStart.weekday

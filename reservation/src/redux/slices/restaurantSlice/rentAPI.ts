@@ -1,12 +1,13 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { Irent, IRentCreateSchema } from "@/types/rent";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const restaurantAPI = createApi({
+export const rentAPI = createApi({
   reducerPath: "rentAPI",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://89.179.242.42:3000/api/rent",
   }),
   endpoints: (builder) => ({
-    createRent: builder.mutation<any, any>({
+    createRent: builder.mutation<Irent, IRentCreateSchema>({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -15,3 +16,5 @@ export const restaurantAPI = createApi({
     }),
   }),
 });
+
+export const { useCreateRentMutation } = rentAPI;

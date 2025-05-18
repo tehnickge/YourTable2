@@ -1,25 +1,32 @@
 import BaseMoal from "@/components/BaseMoal";
+import { useCreateRentMutation } from "@/redux/slices/restaurantSlice/rentAPI";
 import {
   resetModalState,
   setActiveDate,
+  setAmoutPeople,
   setIsOpenModal,
   setTimeEnd,
   setTimeStart,
 } from "@/redux/slices/restaurantSlice/restaurantSlice";
 import { useGetAvailableTimeMutation } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { Button, Grid2, Typography } from "@mui/material";
+import { Button, Grid2, Input, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo } from "react";
+import { DateTime } from "luxon";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const RentModal = () => {
   const dispatch = useAppDispatch();
 
-  const { rentModal, maxHoursToRent } = useAppSelector(
+  const { rentModal, maxHoursToRent, id } = useAppSelector(
     (state) => state.restaurant
   );
+  const { id: userId } = useAppSelector((state) => state.session);
   const [fetchAvailableTime] = useGetAvailableTimeMutation();
+
+  const [fetchCreateRent, { data, isSuccess, isLoading }] =
+    useCreateRentMutation();
 
   const handleClose = useCallback(() => {
     dispatch(setIsOpenModal());
@@ -31,6 +38,37 @@ const RentModal = () => {
 
   const handleSetTimeEnd = (time: string) => () => {
     dispatch(setTimeEnd(time));
+  };
+
+  const handleCreateRent = () => {
+    if (!rentModal.activeDate) return;
+    const date = DateTime.fromISO(rentModal.activeDate.toISOString());
+
+    const [hoursStart, minutesStart] = rentModal.selectTimeStart
+      .split(":")
+      .map(Number);
+    const [hoursEnd, minutesEnd] = rentModal.selectTimeEnd
+      .split(":")
+      .map(Number);
+
+    const timeStart = date
+      .set({ hour: hoursStart, minute: minutesStart })
+      .toJSDate();
+    const timeEnd = date.set({ hour: hoursEnd, minute: minutesEnd }).toJSDate();
+
+    if (userId && id && rentModal.activeSlot)
+      fetchCreateRent({
+        amountPeople: rentModal.amoutPeople,
+        restaurantId: id,
+        slotId: rentModal.activeSlot,
+        timeStart: timeStart,
+        timeEnd: timeEnd,
+        userId: userId,
+      }).then((data) =>
+        setTimeout(() => {
+          dispatch(setIsOpenModal());
+        }, 3000)
+      );
   };
 
   useEffect(() => {
@@ -117,6 +155,15 @@ const RentModal = () => {
             placeholderText="Выберите дату"
           />
         </Grid2>
+        <Typography>Колличество персон</Typography>
+        <Grid2 container justifyContent="center">
+          <Input
+            type="number"
+            className="w-2/5"
+            value={rentModal.amoutPeople}
+            onChange={(e) => dispatch(setAmoutPeople(Number(e.target.value)))}
+          />
+        </Grid2>
         <Typography>Время начала</Typography>
         <Grid2 container>
           {rentModal.avaibleTimes.map((time, i) => {
@@ -156,6 +203,7 @@ const RentModal = () => {
             </div>
           ))}
         </Grid2>
+
         <Button
           variant="contained"
           disabled={
@@ -164,9 +212,11 @@ const RentModal = () => {
             !rentModal.selectTimeStart.length ||
             !rentModal.selectTimeEnd.length
           }
+          onClick={handleCreateRent}
         >
           Забронировать
         </Button>
+        {isSuccess && <div>Успешна создана #{data.id}</div>}
       </Grid2>
     </BaseMoal>
   );

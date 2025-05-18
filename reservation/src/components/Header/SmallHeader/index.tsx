@@ -4,16 +4,17 @@ import HomeIcon from "@mui/icons-material/Home";
 import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
+import { UserTypes } from "@/types/user";
 
 const SmallHeader = () => {
-  const { id } = useAppSelector((state) => state.session);
+  const { id, type } = useAppSelector((state) => state.session);
   const router = useRouter();
 
   const homeButtonHandler = () => {
     router.push(`/`);
   };
   const profileButtonHandler = () => {
-    router.push(`/user/${id}`);
+    if (id) router.push(`/user/${id}`);
   };
 
   return (
@@ -47,21 +48,24 @@ const SmallHeader = () => {
               Home
             </Button>
           </Grid2>
+
           <Grid2>
-            <Button
-              variant="contained"
-              sx={{
-                color: "white",
-                backgroundColor: "transparent",
-                boxShadow: 0,
-                "&:hover": { boxShadow: 0 },
-                "&:disabled": { backgroundColor: "transparent" },
-              }}
-              onClick={profileButtonHandler}
-              startIcon={<AccountBoxRoundedIcon />}
-            >
-              profile
-            </Button>
+             {type !== UserTypes.unauthorized && (
+              <Button
+                variant="contained"
+                sx={{
+                  color: "white",
+                  backgroundColor: "transparent",
+                  boxShadow: 0,
+                  "&:hover": { boxShadow: 0 },
+                  "&:disabled": { backgroundColor: "transparent" },
+                }}
+                onClick={profileButtonHandler}
+                startIcon={<AccountBoxRoundedIcon />}
+              >
+                profile
+              </Button>
+            )}
           </Grid2>
         </Grid2>
       </Container>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadRestaurantFile } from "@/lib/minio";
+import { deleteRestaurantFile, uploadRestaurantFile } from "@/lib/minio";
 import { ERROR_MESSAGES, HTTP_STATUS } from "@/types/HTTPStauts";
 import { IUserPayload } from "@/types/user";
 import jwt from "jsonwebtoken";
@@ -45,7 +45,7 @@ const addPhotos = async (req: NextRequest) => {
 
     // получение объекта из form-data
     const formData = await req.formData();
-    console.log("aaa");
+
     // Получаем все файлы с полем "photo"
     const photoFiles = formData.getAll("photo");
 
@@ -81,6 +81,12 @@ const addPhotos = async (req: NextRequest) => {
       );
     }
 
+    if (checkRestaurant.photos.length > 0)
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.CONFLICT },
+        { status: HTTP_STATUS.CONFLICT }
+      );
+
     const fileUrls: string[] = [];
     let iterator: number = 0;
     for (const photoFile of photoFiles) {
@@ -89,7 +95,7 @@ const addPhotos = async (req: NextRequest) => {
           continue;
         }
         const buffer = await photoFile.arrayBuffer();
-        const fileName = `restaurant${restaurantId}/${iterator}`;
+        const fileName = `restaurant${restaurantId}/${new Date().toISOString()}`;
 
         // Сжимаем изображение перед загрузкой
         const compressedBuffer = await sharp(Buffer.from(buffer))
@@ -126,4 +132,186 @@ const addPhotos = async (req: NextRequest) => {
   }
 };
 
-export { addPhotos as POST };
+const updatePhotos = async (req: NextRequest) => {
+  try {
+    // 1. Аутентификация
+    const token =
+      req.cookies.get("jwt_token")?.value ||
+      req.headers.get("Authorization")?.split(" ")[1];
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Требуется авторизация" },
+        { status: HTTP_STATUS.UNAUTHORIZED }
+      );
+    }
+
+    // 2. Проверка прав
+    const { type } = jwt.verify(
+      token,
+      process.env.JWT_SECRET || ""
+    ) as IUserPayload;
+    if (type !== "admin") {
+      return NextResponse.json(
+        { error: "Недостаточно прав" },
+        { status: HTTP_STATUS.FORBIDDEN }
+      );
+    }
+
+    // 3. Получение данных
+    const formData = await req.formData();
+    const photoFiles = formData.getAll("photo");
+    const restaurantId = Number(formData.get("restaurantId"));
+
+    // 4. Валидация
+    if (!restaurantId || isNaN(restaurantId)) {
+      return NextResponse.json(
+        { error: "Некорректный ID ресторана" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    if (photoFiles.length === 0) {
+      return NextResponse.json(
+        { error: "Не загружено ни одного фото" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+    if (!restaurant)
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    // 5. Обработка фото
+    const newPhotoUrls: string[] = [];
+
+    for (const photoFile of photoFiles) {
+      if (!(photoFile instanceof File)) continue;
+
+      // Проверка типа файла
+      if (!["image/jpeg", "image/png"].includes(photoFile.type)) {
+        continue;
+      }
+
+      // Обработка изображения
+      const buffer = await photoFile.arrayBuffer();
+      const fileName = `restaurant${restaurantId}/${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 9)}.${photoFile.type.split("/")[1]}`;
+
+      const compressedBuffer = await sharp(Buffer.from(buffer))
+        .resize(800)
+        .jpeg({ quality: 80 })
+        .png({ quality: 80 })
+        .toBuffer();
+
+      // Загрузка в хранилище
+      const fileUrl = await uploadRestaurantFile(compressedBuffer, fileName);
+      newPhotoUrls.push(fileUrl);
+    }
+
+    // 6. Обновление в базе данных
+    const updatedRestaurant = await prisma.restaurant.update({
+      where: { id: restaurantId },
+      data: { photos: [...restaurant.photos, ...newPhotoUrls] },
+    });
+
+    return NextResponse.json(updatedRestaurant, { status: HTTP_STATUS.OK });
+  } catch (e) {
+    console.error("Ошибка при обновлении фото:", e);
+    return NextResponse.json(
+      { error: "Внутренняя ошибка сервера" },
+      { status: HTTP_STATUS.SERVER_ERROR }
+    );
+  }
+};
+
+const deletePhoto = async (req: NextRequest) => {
+  try {
+    // 1. Аутентификация
+    const token =
+      req.cookies.get("jwt_token")?.value ||
+      req.headers.get("Authorization")?.split(" ")[1];
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Требуется авторизация" },
+        { status: HTTP_STATUS.UNAUTHORIZED }
+      );
+    }
+
+    // 2. Проверка прав
+    const { type } = jwt.verify(
+      token,
+      process.env.JWT_SECRET || ""
+    ) as IUserPayload;
+    if (type !== "admin") {
+      return NextResponse.json(
+        { error: "Недостаточно прав" },
+        { status: HTTP_STATUS.FORBIDDEN }
+      );
+    }
+
+    // 3. Парсинг URL
+    const url = new URL(req.url);
+    const restaurantId = Number(url.searchParams.get("restaurantId"));
+    const photoUrl = url.searchParams.get("photoUrl");
+
+    if (!restaurantId || !photoUrl) {
+      return NextResponse.json(
+        { error: "Не указаны ID ресторана или URL фото" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    // 4. Проверка существования ресторана
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+
+    if (!restaurant) {
+      return NextResponse.json(
+        { error: "Ресторан не найден" },
+        { status: HTTP_STATUS.NOT_FOUND }
+      );
+    }
+
+    // 5. Проверка существования фото
+    if (!restaurant.photos.includes(photoUrl)) {
+      return NextResponse.json(
+        { error: "Фото не найдено в этом ресторане" },
+        { status: HTTP_STATUS.NOT_FOUND }
+      );
+    }
+
+    // 6. Удаление из хранилища
+    try {
+      const fileName = decodeURIComponent(photoUrl.split("/").pop() || "");
+      await deleteRestaurantFile(`restaurant${restaurantId}/${fileName}`);
+    } catch (e) {
+      console.error("Ошибка удаления файла из хранилища:", e);
+      // Продолжаем удаление из БД даже если файл не найден в хранилище
+    }
+
+    // 7. Обновление в базе данных
+    const updatedRestaurant = await prisma.restaurant.update({
+      where: { id: restaurantId },
+      data: {
+        photos: restaurant.photos.filter((photo) => photo !== photoUrl),
+      },
+    });
+
+    return NextResponse.json(updatedRestaurant, { status: HTTP_STATUS.OK });
+  } catch (e) {
+    console.error("Ошибка при удалении фото:", e);
+    return NextResponse.json(
+      { error: "Внутренняя ошибка сервера" },
+      { status: HTTP_STATUS.SERVER_ERROR }
+    );
+  }
+};
+
+export { addPhotos as POST, updatePhotos as PUT, deletePhoto as DELETE };

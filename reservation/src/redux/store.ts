@@ -10,6 +10,9 @@ import searchRestaurantSlice from "./slices/searchRestaurantSlice/searchRestaura
 import userSlice from "./slices/userSlice/userSlice";
 import { userAPI } from "./slices/userSlice/userApi";
 import restaurantSlice from "./slices/restaurantSlice/restaurantSlice";
+import { rentAPI } from "./slices/restaurantSlice/rentAPI";
+import { adminAPI } from "./slices/adminSlice/adminAPI";
+import adminRestaurantSlice from "./slices/adminSlice/adminRestaurantSlice";
 
 // Комбинируем редюсеры
 const rootReducer = combineReducers({
@@ -18,9 +21,13 @@ const rootReducer = combineReducers({
   searchRestaurant: searchRestaurantSlice,
   user: userSlice,
   restaurant: restaurantSlice,
+  admin: adminRestaurantSlice,
+
   [authAPI.reducerPath]: authAPI.reducer,
   [restaurantAPI.reducerPath]: restaurantAPI.reducer,
   [userAPI.reducerPath]: userAPI.reducer,
+  [rentAPI.reducerPath]: rentAPI.reducer,
+  [adminAPI.reducerPath]: adminAPI.reducer,
 });
 
 // Конфиг для redux-persist
@@ -40,7 +47,9 @@ export const store = configureStore({
     getDefaultMiddleware({ serializableCheck: false }).concat(
       authAPI.middleware,
       restaurantAPI.middleware,
-      userAPI.middleware
+      userAPI.middleware,
+      rentAPI.middleware,
+      adminAPI.middleware
     ),
 });
 

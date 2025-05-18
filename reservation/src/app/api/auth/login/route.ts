@@ -78,7 +78,7 @@ const auth = async (req: NextRequest) => {
       type: currentUser.type,
     };
     // создаем новую подпись
-    const JWTToken = jwt.sign(userJWT, process.env.JWT_SECRET, {
+    const JWTToken = jwt.sign(userJWT, process.env.JWT_SECRET!, {
       expiresIn: "1d",
     });
     // создание ответа

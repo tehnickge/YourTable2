@@ -10,6 +10,7 @@ type RestaurantState = {
   restaurantChain_fk: number | null;
   photos: string[];
   maxHoursToRent: number;
+  uniqueKey: string;
   averageBill: number | null;
   lastUpdate: string;
   rating: number | null;
@@ -78,6 +79,7 @@ type RestaurantState = {
     avaibleTimes: string[];
     selectTimeStart: string;
     selectTimeEnd: string;
+    amoutPeople: number;
   };
 };
 
@@ -116,7 +118,9 @@ const initialState: RestaurantState = {
     avaibleTimes: [],
     selectTimeStart: "",
     selectTimeEnd: "",
+    amoutPeople: 1,
   },
+  uniqueKey: ""
 };
 
 const restaurantSlice = createSlice({
@@ -137,6 +141,7 @@ const restaurantSlice = createSlice({
         avaibleTimes: [],
         selectTimeStart: "",
         selectTimeEnd: "",
+        amoutPeople: 1,
       };
     },
     setActiveDate: (state, action: PayloadAction<Date | null>) => {
@@ -148,6 +153,9 @@ const restaurantSlice = createSlice({
     },
     setTimeEnd: (state, action: PayloadAction<string>) => {
       state.rentModal.selectTimeEnd = action.payload;
+    },
+    setAmoutPeople: (state, action: PayloadAction<number>) => {
+      state.rentModal.amoutPeople = action.payload > 0 ? action.payload : 1;
     },
   },
   extraReducers: (builder) => {
@@ -199,5 +207,6 @@ export const {
   setActiveDate,
   setTimeStart,
   setTimeEnd,
+  setAmoutPeople,
 } = restaurantSlice.actions;
 export default restaurantSlice.reducer;
