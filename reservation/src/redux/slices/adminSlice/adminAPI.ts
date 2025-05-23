@@ -1,3 +1,4 @@
+import { IRestaurantCreateSchema } from "./../../../types/restaurant";
 import { Irent, IRentCreateSchema } from "@/types/rent";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -48,6 +49,16 @@ export const adminAPI = createApi({
         body: formData,
       }),
     }),
+    createNewResturant: builder.mutation<
+      BaseRestaurant,
+      IRestaurantCreateSchema
+    >({
+      query: (data) => ({
+        url: "restaurant",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -56,4 +67,5 @@ export const {
   useUpdateAdminRestaurantByIdMutation,
   useDeleteRestaurantPhotoMutation,
   useUpdateRestaurantPhotosMutation,
+  useCreateNewResturantMutation,
 } = adminAPI;

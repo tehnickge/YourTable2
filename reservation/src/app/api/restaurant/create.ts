@@ -76,6 +76,15 @@ export const createRestaurant = async (req: NextRequest) => {
         shortInfo: restValid.shortInfo || "",
         uniqueKey: restValid.uniqueKey,
         averageBill: 333,
+        rating: 1,
+        address: {
+          create: {
+            city: "Москва",
+            fullAddress: "null",
+            coordinate: "",
+            timezone: "Moscow/Europ",
+          },
+        },
       },
     });
 

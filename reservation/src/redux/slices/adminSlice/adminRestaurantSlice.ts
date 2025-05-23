@@ -1,9 +1,16 @@
-import { AdminRestaurant } from "@/types/restaurant";
+import { AdminRestaurant, IRestaurantCreateSchema } from "@/types/restaurant";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { adminAPI } from "./adminAPI";
+import { BaseFilterData } from "@/components/BaseFilter";
 
 export type AdminRestaurantState = {
   restaurant: AdminRestaurant;
+  newRestaurant: {
+    info: string;
+    title: string;
+    shortInfo: string;
+  };
+  kitchens: BaseFilterData[];
 };
 
 const initialState: AdminRestaurantState = {
@@ -41,6 +48,12 @@ const initialState: AdminRestaurantState = {
     menus: [],
     workShedules: [],
   },
+  newRestaurant: {
+    title: "",
+    info: "",
+    shortInfo: "",
+  },
+  kitchens: [],
 };
 
 const adminRestaurantSlice = createSlice({
@@ -63,6 +76,15 @@ const adminRestaurantSlice = createSlice({
     setAverageBillToUpdate: (state, action: PayloadAction<number>) => {
       state.restaurant.averageBill =
         Number(action.payload) > 0 ? action.payload : 100;
+    },
+    setNewRestaurantTitle: (state, action: PayloadAction<string>) => {
+      state.newRestaurant.title = action.payload;
+    },
+    setNewRestaurantShortInfo: (state, action: PayloadAction<string>) => {
+      state.newRestaurant.shortInfo = action.payload;
+    },
+    setNewRestaurantInfo: (state, action: PayloadAction<string>) => {
+      state.newRestaurant.info = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -103,5 +125,8 @@ export const {
   setMaxHoursToRentToUpdate,
   setShortInfoToUpdate,
   setTitleToUpdate,
+  setNewRestaurantInfo,
+  setNewRestaurantShortInfo,
+  setNewRestaurantTitle,
 } = adminRestaurantSlice.actions;
 export default adminRestaurantSlice.reducer;
