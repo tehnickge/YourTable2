@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import {
   useGetAllRestaurantMutation,
   useLazyGetAllKitchensQuery,
+  useLazyGetRecommendationQuery,
 } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import {
   setMaxBill,
@@ -19,6 +20,8 @@ import { useEffect } from "react";
 export default function Home() {
   const { username, type } = useAppSelector((state) => state.session);
   console.log(username, type);
+
+  const [getRecommindation, { data: rec }] = useLazyGetRecommendationQuery();
 
   const dispatch = useAppDispatch();
 
@@ -57,6 +60,8 @@ export default function Home() {
       minRating: minRating,
       title: title,
     });
+
+    getRecommindation();
   }, [page]);
 
   const prevButtonHandler = () => {
@@ -81,6 +86,21 @@ export default function Home() {
         </Grid2>
       )}
 
+      <Grid2
+        container
+        size={{ xs: 12 }}
+        sx={{ gap: "20px" }}
+        padding={{ xs: 5, md: 0 }}
+      ></Grid2>
+      {rec?.map((restaurant, i) => (
+        <RestaurantCard
+          key={i}
+          restaurant={restaurant}
+          onLikeClick={handleLikeClick}
+        />
+      ))}
+
+      <div>TEST</div>
       <Grid2
         container
         size={{ xs: 12 }}

@@ -1,5 +1,5 @@
 import { AdminRestaurant } from "@/types/restaurant";
-import { Button, Container, Grid, Typography } from "@mui/material";
+import { Button, Container, Grid, Grid2, Typography } from "@mui/material";
 import Image from "next/image";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useRef, useState } from "react";
@@ -66,12 +66,12 @@ const PhotoRestaurantInfo: React.FC<PhotoRestaurantInfoProps> = ({
 
   return (
     <Container maxWidth="sm">
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         <Typography variant="h6" gutterBottom>
           Фотографии ресторана
         </Typography>
 
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid2 container spacing={2} sx={{ mb: 2 }}>
           {restaurant.photos.map((photo, i) => (
             <Grid item key={i} sx={{ position: "relative" }}>
               <div className="relative group">
@@ -105,7 +105,7 @@ const PhotoRestaurantInfo: React.FC<PhotoRestaurantInfoProps> = ({
               </div>
             </Grid>
           ))}
-        </Grid>
+        </Grid2>
 
         <Grid container spacing={2}>
           <Grid item>
@@ -126,7 +126,7 @@ const PhotoRestaurantInfo: React.FC<PhotoRestaurantInfoProps> = ({
             </Button>
           </Grid>
         </Grid>
-      </Grid>
+      </Grid2>
     </Container>
   );
 };

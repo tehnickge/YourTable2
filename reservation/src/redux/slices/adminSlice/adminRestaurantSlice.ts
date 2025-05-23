@@ -2,6 +2,7 @@ import { AdminRestaurant, IRestaurantCreateSchema } from "@/types/restaurant";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { adminAPI } from "./adminAPI";
 import { BaseFilterData } from "@/components/BaseFilter";
+import { restaurantAPI } from "../searchRestaurantSlice/searchRestaurantAPI";
 
 export type AdminRestaurantState = {
   restaurant: AdminRestaurant;
@@ -10,7 +11,19 @@ export type AdminRestaurantState = {
     title: string;
     shortInfo: string;
   };
-  kitchens: BaseFilterData[];
+  address: {
+    allCities: string[];
+  };
+  kitchens: {
+    allKitchens: BaseFilterData[];
+    selectedKitchen: BaseFilterData;
+  };
+
+  workShedule: {
+    selectedDay: BaseFilterData;
+    timeBegin: string;
+    timeEnd: string;
+  };
 };
 
 const initialState: AdminRestaurantState = {
@@ -53,7 +66,21 @@ const initialState: AdminRestaurantState = {
     info: "",
     shortInfo: "",
   },
-  kitchens: [],
+  kitchens: {
+    allKitchens: [],
+    selectedKitchen: {
+      id: 0,
+      title: "",
+    },
+  },
+  address: {
+    allCities: [],
+  },
+  workShedule: {
+    selectedDay: { id: 0, title: "" },
+    timeBegin: "",
+    timeEnd: "",
+  },
 };
 
 const adminRestaurantSlice = createSlice({
@@ -86,6 +113,30 @@ const adminRestaurantSlice = createSlice({
     setNewRestaurantInfo: (state, action: PayloadAction<string>) => {
       state.newRestaurant.info = action.payload;
     },
+    setNewCity: (state, action: PayloadAction<string>) => {
+      state.restaurant.address.city = action.payload;
+    },
+    setNewFullAddress: (state, action: PayloadAction<string>) => {
+      state.restaurant.address.fullAddress = action.payload;
+    },
+    setNewCoordinate: (state, action: PayloadAction<string>) => {
+      state.restaurant.address.coordinate = action.payload;
+    },
+    setNewTimeZone: (state, action: PayloadAction<string>) => {
+      state.restaurant.address.timezone = action.payload;
+    },
+    setSelectedKitchen: (state, action: PayloadAction<BaseFilterData>) => {
+      state.kitchens.selectedKitchen = action.payload;
+    },
+    setSelectedDay: (state, action: PayloadAction<BaseFilterData>) => {
+      state.workShedule.selectedDay = action.payload;
+    },
+    setTimeBegin: (state, action: PayloadAction<string>) => {
+      state.workShedule.timeBegin = action.payload;
+    },
+    setTimeEnd: (state, action: PayloadAction<string>) => {
+      state.workShedule.timeEnd = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -115,6 +166,66 @@ const adminRestaurantSlice = createSlice({
         (state, action) => {
           state.restaurant.photos = action.payload.photos;
         }
+      )
+      .addMatcher(
+        restaurantAPI.endpoints.getAllCities.matchFulfilled,
+        (state, action) => {
+          state.address.allCities = action.payload;
+        }
+      )
+      .addMatcher(
+        restaurantAPI.endpoints.getAllKitchens.matchFulfilled,
+        (state, action) => {
+          state.kitchens.allKitchens = action.payload;
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.upDateAddressById.matchFulfilled,
+        (state, action) => {
+          state.restaurant.address = { ...action.payload };
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.appendKitchenToRestaurant.matchFulfilled,
+        (state, action) => {
+          state.restaurant.kitchens.push(action.payload);
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.deleteKitchenFromRestaurant.matchFulfilled,
+        (state, action) => {
+          state.restaurant.kitchens = state.restaurant.kitchens.filter(
+            (kitchen) => kitchen.id !== action.payload.id
+          );
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.deleteWorkShedule.matchFulfilled,
+        (state, action) => {
+          state.restaurant.workShedules = state.restaurant.workShedules.filter(
+            (shedule) => shedule.id !== action.payload.id
+          );
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.appendWorkSheduleToRestaurant.matchFulfilled,
+        (state, action) => {
+          return {
+            ...state,
+            restaurant: {
+              ...state.restaurant,
+              workShedules: [
+                ...state.restaurant.workShedules,
+                {
+                  id: action.payload.id,
+                  day: action.payload.day,
+                  timeBegin: new Date(action.payload.timeBegin).toISOString(),
+                  timeEnd: new Date(action.payload.timeEnd).toISOString(),
+                },
+              ],
+            },
+          };
+        }
       );
   },
 });
@@ -128,5 +239,13 @@ export const {
   setNewRestaurantInfo,
   setNewRestaurantShortInfo,
   setNewRestaurantTitle,
+  setNewCity,
+  setNewCoordinate,
+  setNewFullAddress,
+  setNewTimeZone,
+  setSelectedKitchen,
+  setSelectedDay,
+  setTimeBegin,
+  setTimeEnd,
 } = adminRestaurantSlice.actions;
 export default adminRestaurantSlice.reducer;

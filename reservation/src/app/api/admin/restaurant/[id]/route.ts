@@ -11,8 +11,9 @@ import { UserTypes } from "@/types/user";
 
 export const getRestaurantById = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) => {
+  const { params } = context;
   const token = await getToken(req);
   if (!token) {
     return NextResponse.json(

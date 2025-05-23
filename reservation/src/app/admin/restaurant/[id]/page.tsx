@@ -12,23 +12,32 @@ import {
   useLazyGetAllCitiesQuery,
   useLazyGetAllKitchensQuery,
 } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
+import UpdateKitchens from "./components/Kitchens";
+import WorkShedule from "./components/WorkShedule";
 
 const RestaurantAdminPage = () => {
   const dispatch = useAppDispatch();
+  const { restaurant } = useAppSelector((state) => state.admin);
 
   const params = useParams();
 
-  useLazyGetAllKitchensQuery();
-  useLazyGetAllCitiesQuery();
+  const [fetchAllCities] = useLazyGetAllCitiesQuery();
+  const [fetchKitchens] = useLazyGetAllKitchensQuery();
+
+  useEffect(() => {
+    fetchAllCities();
+    fetchKitchens();
+  }, []);
 
   const { data } = useGetAdminRestaurantByIdQuery(params.id as string);
-  const { restaurant } = useAppSelector((state) => state.admin);
 
   return (
-    <Grid2 container size={12}>
+    <Grid2 container size={12} gap={8}>
       <BaseRestaurantInfo restaurant={restaurant} />
       <PhotoRestaurantInfo restaurant={restaurant} />
       <AddressInfo restaurant={restaurant} />
+      <UpdateKitchens restaurant={restaurant} />
+      <WorkShedule restaurant={restaurant} />
     </Grid2>
   );
 };

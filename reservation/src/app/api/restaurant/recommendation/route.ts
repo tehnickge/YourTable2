@@ -6,6 +6,7 @@ import { getToken, getUserPayload } from "../../APIHelpers";
 export async function GET(req: NextRequest) {
   try {
     const token = await getToken(req);
+
     if (!token) {
       return NextResponse.json(
         { error: ERROR_MESSAGES.BAD_AUTHORIZED },
@@ -14,6 +15,7 @@ export async function GET(req: NextRequest) {
     }
 
     const user = await getUserPayload(token);
+
     if (!user) {
       return NextResponse.json(
         {
@@ -95,7 +97,7 @@ export async function GET(req: NextRequest) {
       status: HTTP_STATUS.OK,
     });
   } catch (e) {
-    console.error("recommendation error", e);
+    console.error("recommendation error");
     return NextResponse.json(
       { error: ERROR_MESSAGES.SERVER_ERROR },
       { status: HTTP_STATUS.SERVER_ERROR }

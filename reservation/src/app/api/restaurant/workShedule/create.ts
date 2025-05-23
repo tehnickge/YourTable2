@@ -98,7 +98,10 @@ export const createShedule = async (req: NextRequest) => {
     // проверка на корректность интервала
     if (!interval.isValid)
       return NextResponse.json(
-        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin or time end not valid" },
+        {
+          error:
+            ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin or time end not valid",
+        },
         { status: HTTP_STATUS.BAD_REQUEST }
       );
     // создаем новое рассписание привязывая к конкретному ресторану и дню
@@ -109,6 +112,7 @@ export const createShedule = async (req: NextRequest) => {
         restaurant: { connect: { id: validShedule.restaurantId } },
         day: { connect: { id: validShedule.dayId } },
       },
+      include: { day: true },
     });
 
     return NextResponse.json(newShedule, { status: HTTP_STATUS.OK });

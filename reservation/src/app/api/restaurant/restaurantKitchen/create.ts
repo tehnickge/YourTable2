@@ -6,7 +6,6 @@ import * as Yup from "yup";
 import prisma from "@/lib/prisma";
 import { handleValidationError } from "../../APIHelpers";
 import { IAppendKitchenToRestaurantCreateSchema } from "@/types/kitchenRestaurant";
-import { connect } from "http2";
 
 const kitchenToRestaurantSchema: Yup.Schema<IAppendKitchenToRestaurantCreateSchema> =
   Yup.object().shape({
@@ -120,7 +119,12 @@ export const appendKitchenToRestaurant = async (req: NextRequest) => {
       },
     });
 
-    return NextResponse.json(newKitchenToRestaurant, {
+    const response = await prisma.restaurantKitchen.findUnique({
+      where: { id: newKitchenToRestaurant.id },
+      include: { kitchen: true },
+    });
+
+    return NextResponse.json(response, {
       status: HTTP_STATUS.OK,
     });
   } catch (error) {

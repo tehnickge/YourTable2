@@ -6,10 +6,12 @@ import { handleValidationError } from "../../APIHelpers";
 
 export const getRestaurantById = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } } // <--- context содержит params
 ) => {
   try {
-    if (!params.id) {
+    const restaurantId = Number(params.id);
+    
+    if (!restaurantId) {
       return NextResponse.json(
         { error: ERROR_MESSAGES.BAD_ARGUMENTS },
         {
@@ -17,7 +19,7 @@ export const getRestaurantById = async (
         }
       );
     }
-    const restId = Number(params.id);
+    const restId = Number(restaurantId);
     const restaurant = await prisma.restaurant.findFirst({
       where: {
         id: restId,

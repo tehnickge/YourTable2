@@ -104,8 +104,8 @@ export type AdminRestaurant = {
     id: number;
     city: string;
     fullAddress: string;
-    coordinate: string;
-    timezone: string;
+    coordinate: string | null;
+    timezone: string | null;
   };
   restaurantChain: {
     id: number;

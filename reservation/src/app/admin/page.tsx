@@ -6,6 +6,11 @@ import { withAuth } from "@/hocs/withAuth";
 import RestaurantList from "./components/RestaurantsList";
 import { Grid2 } from "@mui/material";
 import Link from "next/link";
+import {
+  useLazyGetAllCitiesQuery,
+  useLazyGetAllKitchensQuery,
+} from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
+import { useEffect } from "react";
 
 const AdminPage = () => {
   return (

@@ -8,9 +8,10 @@ import { UserTypes } from "@/types/user";
 
 const getUserById = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) => {
   try {
+    const { id: userId } = context.params;
     const token = await getToken(req);
     if (!token) {
       return NextResponse.json(
@@ -34,7 +35,7 @@ const getUserById = async (
       );
     }
 
-    if (user.id !== Number(params.id) && UserTypes.admin !== user.type) {
+    if (user.id !== Number(userId) && UserTypes.admin !== user.type) {
       return NextResponse.json(
         {
           error: ERROR_MESSAGES.BAD_AUTHORIZED + " Insufficient access rights",

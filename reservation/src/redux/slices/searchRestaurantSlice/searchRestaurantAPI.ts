@@ -47,6 +47,7 @@ export const restaurantAPI = createApi({
         method: "GET",
       }),
     }),
+
     getAvailableTime: builder.mutation<
       string[],
       { slotId: number; date: Date }
@@ -57,6 +58,15 @@ export const restaurantAPI = createApi({
         body: data,
       }),
     }),
+
+    getRecommendation: builder.query<RestaurantWithKitchenZoneSchedule[], void>(
+      {
+        query: () => ({
+          url: "/recommendation",
+          method: "GET",
+        }),
+      }
+    ),
   }),
 });
 
@@ -67,4 +77,5 @@ export const {
   useLazyGetAllCitiesQuery,
   useLazyGetByRestaurantIdQuery,
   useGetAvailableTimeMutation,
+  useLazyGetRecommendationQuery,
 } = restaurantAPI;

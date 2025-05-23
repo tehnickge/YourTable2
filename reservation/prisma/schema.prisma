@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,24 +10,33 @@ datasource db {
 model Restaurant {
   id                 Int                 @id @default(autoincrement())
   title              String
-  uniqueKey          String
-  createdAt          DateTime            @default(now())
   info               String?
   shortInfo          String?
-  restaurantChain    RestaurantChain?    @relation(fields: [restaurantChain_fk], references: [id])
-  restaurantChain_fk Int?
-  photos             String[]            @default([])
-  maxHoursToRent     Decimal             @default(1)
-  menus              Menu[]
-  address            Address?
-  workShedules       WorkShedule[]
-  kitchens           RestaurantKitchen[]
-  averageBill        Decimal?
+  createdAt          DateTime            @default(now())
   lastUpdate         DateTime            @default(now())
-  reviews            Review[]
-  zones              Zone[]
-  rents              Rent[]
+  maxHoursToRent     Decimal             @default(1)
+  restaurantChain_fk Int?
+  uniqueKey          String
+  averageBill        Decimal?
   rating             Decimal?
+  photos             String[]            @default([])
+  address            Address?
+  hostees            Hostes[]
+  menus              Menu[]
+  rents              Rent[]
+  restaurantChain    RestaurantChain?    @relation(fields: [restaurantChain_fk], references: [id])
+  kitchens           RestaurantKitchen[]
+  reviews            Review[]
+  workShedules       WorkShedule[]
+  zones              Zone[]
+}
+
+model Hostes {
+  id            Int        @id @default(autoincrement())
+  login         String     @unique
+  password      String
+  restaurant_fk Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
 model Rent {
@@ -41,60 +44,60 @@ model Rent {
   createdAt     DateTime   @default(now())
   timeStart     DateTime
   timeEnd       DateTime
-  user          User       @relation(fields: [user_fk], references: [id])
   user_fk       Int
   rentStatus    String
-  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   restaurant_fk Int
   amountPeople  Int
   slot_fk       Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   slot          Slot       @relation(fields: [slot_fk], references: [id])
+  user          User       @relation(fields: [user_fk], references: [id])
 }
 
 model Slot {
   id             Int     @id @default(autoincrement())
-  number         String
-  description    String?
   maxCountPeople Int
   zone_fk        Int
-  zone           Zone    @relation(fields: [zone_fk], references: [id])
+  number         String
+  description    String?
   rents          Rent[]
+  zone           Zone    @relation(fields: [zone_fk], references: [id])
 }
 
 model Zone {
   id            Int        @id @default(autoincrement())
-  title         String?
-  description   String?
   color         String?
   restaurant_fk Int
-  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  description   String?
+  title         String?
   slots         Slot[]
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
 model User {
   id              Int      @id @default(autoincrement())
-  username        String   @unique
   password        String
   photo           String?
   type            String
-  email           String   @unique
   createdAt       DateTime @default(now())
   historyRest     Int[]    @default([])
   wishList        Int[]    @default([])
-  recommendations Int[]    @default([])
   phoneNumber     String?  @unique
-  reviews         Review[]
+  username        String   @unique
+  email           String   @unique
+  recommendations Int[]    @default([])
   rents           Rent[]
+  reviews         Review[]
 }
 
 model Review {
   id            Int        @id @default(autoincrement())
   restaurant_fk Int
-  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   user_fk       Int
-  user          User       @relation(fields: [user_fk], references: [id])
   comment       String?
   rating        Int
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
+  user          User       @relation(fields: [user_fk], references: [id])
 }
 
 model Kitchen {
@@ -106,19 +109,19 @@ model Kitchen {
 model RestaurantKitchen {
   id            Int        @id @default(autoincrement())
   kitchen_fk    Int
-  kitchen       Kitchen    @relation(fields: [kitchen_fk], references: [id])
   restaurant_fk Int
+  kitchen       Kitchen    @relation(fields: [kitchen_fk], references: [id])
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
 model WorkShedule {
   id            Int        @id @default(autoincrement())
-  timeBegin     DateTime
-  timeEnd       DateTime
-  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   restaurant_fk Int
   day_fk        Int
+  timeBegin     DateTime
+  timeEnd       DateTime
   day           Day        @relation(fields: [day_fk], references: [id])
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
 model Day {
@@ -132,25 +135,25 @@ model Address {
   city          String
   fullAddress   String
   coordinate    String?
-  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
   restaurant_fk Int        @unique
   timezone      String?
+  restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
 model Menu {
   id            Int        @id @default(autoincrement())
   titleDish     String?
-  photo         String?
   price         Decimal?
   restaurant_fk Int
+  photo         String?
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
 }
 
 model RestaurantChain {
   id          Int          @id @default(autoincrement())
   title       String
-  restaurants Restaurant[]
   company_fk  Int
+  restaurants Restaurant[]
   company     Company      @relation(fields: [company_fk], references: [id])
 }
 
