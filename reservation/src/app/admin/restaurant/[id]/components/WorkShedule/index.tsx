@@ -160,7 +160,7 @@ const WorkShedule: React.FC<WorkSheduleProps> = ({ restaurant }) => {
           />
         </Grid2>
 
-        <Grid2 container>
+        <Grid2 container justifyContent="center">
           <Button variant="contained" onClick={handleAppendSheduleToRestaurant}>
             Добавить
           </Button>

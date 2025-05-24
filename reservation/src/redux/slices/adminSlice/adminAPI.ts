@@ -5,6 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { AdminRestaurant } from "@/types/restaurant";
 import { RestaurantUpdate } from "@/app/api/restaurant/[id]/update";
 import { Prisma } from "@prisma/client";
+import { number } from "yup";
 
 export type BaseRestaurant = Prisma.RestaurantGetPayload<{}>;
 export type BaseAddress = Prisma.AddressGetPayload<{}>;
@@ -16,6 +17,7 @@ export type BaseWorkShadule = Prisma.WorkSheduleGetPayload<{
 }>;
 export type BaseZone = Prisma.ZoneGetPayload<{}>;
 export type BaseSlot = Prisma.SlotGetPayload<{}>;
+export type BaseHostes = Prisma.HostesGetPayload<{}>;
 
 export const adminAPI = createApi({
   reducerPath: "adminAPI",
@@ -154,6 +156,54 @@ export const adminAPI = createApi({
         body: data,
       }),
     }),
+    appendZoneToRestaurant: builder.mutation<
+      BaseZone,
+      {
+        title?: string;
+        description?: string;
+        color?: string;
+        restaurantId: number;
+      }
+    >({
+      query: (data) => ({
+        url: "/restaurant/zone",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    deleteZoneFromRestaurant: builder.mutation<BaseZone, { id: number }>({
+      query: (data) => ({
+        url: "/restaurant/zone",
+        method: "DELETE",
+        body: data,
+      }),
+    }),
+    appendHostesToRestaurant: builder.mutation<
+      BaseHostes,
+      {
+        login: string;
+        password: string;
+        restaurantId: number;
+      }
+    >({
+      query: (data) => ({
+        url: "/restaurant/hostes",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    deleteHostesFromRestaurant: builder.mutation<
+      BaseHostes,
+      {
+        id: number;
+      }
+    >({
+      query: (data) => ({
+        url: "/restaurant/hostes",
+        method: "DELETE",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -170,4 +220,8 @@ export const {
   useAppendWorkSheduleToRestaurantMutation,
   useAppnedSlotToZoneMutation,
   useDeleteSlotfromZoneMutation,
+  useAppendZoneToRestaurantMutation,
+  useDeleteZoneFromRestaurantMutation,
+  useAppendHostesToRestaurantMutation,
+  useDeleteHostesFromRestaurantMutation,
 } = adminAPI;

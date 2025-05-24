@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { number } from "yup";
 
 export interface IRestaurant {
   info: string | null;
@@ -126,5 +127,10 @@ export type AdminRestaurant = {
     };
     timeBegin: string;
     timeEnd: string;
+  }[];
+  hostes: {
+    id: number;
+    login: string;
+    password: string;
   }[];
 };

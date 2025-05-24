@@ -30,6 +30,13 @@ export type AdminRestaurantState = {
     maxPeopleAmount: number;
     description: string;
     slotNumber: string;
+    zoneTitle: string;
+    zoneDescription: string;
+  };
+
+  hostes: {
+    login: string;
+    password: string;
   };
 };
 
@@ -67,6 +74,7 @@ const initialState: AdminRestaurantState = {
     },
     menus: [],
     workShedules: [],
+    hostes: [],
   },
   newRestaurant: {
     title: "",
@@ -93,6 +101,12 @@ const initialState: AdminRestaurantState = {
     maxPeopleAmount: 0,
     description: "",
     slotNumber: "",
+    zoneTitle: "",
+    zoneDescription: "",
+  },
+  hostes: {
+    login: "",
+    password: "",
   },
 };
 
@@ -161,6 +175,18 @@ const adminRestaurantSlice = createSlice({
     },
     setSlotMaxPeopleAmount: (state, action: PayloadAction<number>) => {
       state.zonesWithSlots.maxPeopleAmount = action.payload;
+    },
+    setZoneTitle: (state, action: PayloadAction<string>) => {
+      state.zonesWithSlots.zoneTitle = action.payload;
+    },
+    setZoneDescription: (state, action: PayloadAction<string>) => {
+      state.zonesWithSlots.zoneDescription = action.payload;
+    },
+    setHostesLogin: (state, action: PayloadAction<string>) => {
+      state.hostes.login = action.payload;
+    },
+    setHostesPassword: (state, action: PayloadAction<string>) => {
+      state.hostes.password = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -277,6 +303,44 @@ const adminRestaurantSlice = createSlice({
             zoneIndex
           ].slots.filter((slot) => slot.id !== action.payload.id);
         }
+      )
+      .addMatcher(
+        adminAPI.endpoints.appendZoneToRestaurant.matchFulfilled,
+        (state, action) => {
+          state.restaurant.zones.push({
+            id: action.payload.id,
+            color: action.payload.color || "",
+            description: action.payload.description || "",
+            slots: [],
+            title: action.payload.title || "",
+          });
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.deleteZoneFromRestaurant.matchFulfilled,
+        (state, action) => {
+          state.restaurant.zones = state.restaurant.zones.filter(
+            (zone) => zone.id !== action.payload.id
+          );
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.appendHostesToRestaurant.matchFulfilled,
+        (state, action) => {
+          state.restaurant.hostes.push({
+            id: action.payload.id,
+            login: action.payload.login,
+            password: action.payload.password,
+          });
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.deleteHostesFromRestaurant.matchFulfilled,
+        (state, action) => {
+          state.restaurant.hostes = state.restaurant.hostes.filter(
+            (employee) => employee.id !== action.payload.id
+          );
+        }
       );
   },
 });
@@ -302,5 +366,9 @@ export const {
   setSlotDescriptionr,
   setSlotNumber,
   setSlotMaxPeopleAmount,
+  setZoneDescription,
+  setZoneTitle,
+  setHostesLogin,
+  setHostesPassword,
 } = adminRestaurantSlice.actions;
 export default adminRestaurantSlice.reducer;

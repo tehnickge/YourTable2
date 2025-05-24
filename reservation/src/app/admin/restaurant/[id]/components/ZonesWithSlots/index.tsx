@@ -15,10 +15,14 @@ import {
   setSlotDescriptionr,
   setSlotMaxPeopleAmount,
   setSlotNumber,
+  setZoneDescription,
+  setZoneTitle,
 } from "@/redux/slices/adminSlice/adminRestaurantSlice";
 import {
+  useAppendZoneToRestaurantMutation,
   useAppnedSlotToZoneMutation,
   useDeleteSlotfromZoneMutation,
+  useDeleteZoneFromRestaurantMutation,
 } from "@/redux/slices/adminSlice/adminAPI";
 
 interface ZonesWithSlotsProps {
@@ -30,6 +34,8 @@ const ZonesWithSlots: React.FC<ZonesWithSlotsProps> = ({ restaurant }) => {
   const { zonesWithSlots } = useAppSelector((state) => state.admin);
   const [fetchAppendSlotToZone] = useAppnedSlotToZoneMutation();
   const [fetchDeleteSlotFromZone] = useDeleteSlotfromZoneMutation();
+  const [fetchAppendZoneRestaurant] = useAppendZoneToRestaurantMutation();
+  const [fetchDeleteZoneFromRestaurant] = useDeleteZoneFromRestaurantMutation();
 
   if (!restaurant) return null;
 
@@ -44,6 +50,18 @@ const ZonesWithSlots: React.FC<ZonesWithSlotsProps> = ({ restaurant }) => {
 
   const handleDeleteSlot = (id: number) => () => {
     fetchDeleteSlotFromZone({ id });
+  };
+
+  const handleAppendZoneToRestaurant = () => {
+    fetchAppendZoneRestaurant({
+      restaurantId: restaurant.id,
+      title: zonesWithSlots.zoneTitle,
+      description: zonesWithSlots.zoneDescription,
+    });
+  };
+
+  const handleDeleteZoneFromRestaurant = (id: number) => () => {
+    fetchDeleteZoneFromRestaurant({ id });
   };
 
   return (
@@ -70,6 +88,7 @@ const ZonesWithSlots: React.FC<ZonesWithSlotsProps> = ({ restaurant }) => {
                   padding: "0 !important",
                   lineHeight: "1 !important",
                 }}
+                onClick={handleDeleteZoneFromRestaurant(zone.id)}
               >
                 X
               </Button>
@@ -172,8 +191,34 @@ const ZonesWithSlots: React.FC<ZonesWithSlotsProps> = ({ restaurant }) => {
             Добавить слот
           </Button>
         </Grid2>
-        <Grid2 container>
-          <Button>Добавить зону</Button>
+        <Grid2 container direction="column">
+          <Grid2 container direction="row" justifyContent="space-between">
+            <Typography>Название зоны</Typography>
+            <Input
+              value={zonesWithSlots.zoneTitle}
+              onChange={(e) => {
+                dispatch(setZoneTitle(e.target.value));
+              }}
+            />
+          </Grid2>
+
+          <Grid2 container direction="row" justifyContent="space-between">
+            <Typography>Описаеие зоны</Typography>
+            <Input
+              value={zonesWithSlots.zoneDescription}
+              onChange={(e) => {
+                dispatch(setZoneDescription(e.target.value));
+              }}
+            />
+          </Grid2>
+
+          <Button
+            onClick={handleAppendZoneToRestaurant}
+            variant="contained"
+            disabled={!zonesWithSlots.zoneTitle.length}
+          >
+            Добавить зону
+          </Button>
         </Grid2>
       </Grid2>
     </Container>

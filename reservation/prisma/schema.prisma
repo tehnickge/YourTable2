@@ -21,7 +21,7 @@ model Restaurant {
   rating             Decimal?
   photos             String[]            @default([])
   address            Address?
-  hostees            Hostes[]
+  hostes            Hostes[]
   menus              Menu[]
   rents              Rent[]
   restaurantChain    RestaurantChain?    @relation(fields: [restaurantChain_fk], references: [id])

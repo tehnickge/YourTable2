@@ -111,6 +111,7 @@ export const getRestaurantById = async (
         address: true,
         menus: true,
         restaurantChain: { select: { id: true, title: true, company: true } },
+        hostes: true,
       },
     });
 
