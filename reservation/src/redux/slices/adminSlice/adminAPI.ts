@@ -14,6 +14,8 @@ export type BaseRestaurantKitchen = Prisma.RestaurantKitchenGetPayload<{
 export type BaseWorkShadule = Prisma.WorkSheduleGetPayload<{
   include: { day: true };
 }>;
+export type BaseZone = Prisma.ZoneGetPayload<{}>;
+export type BaseSlot = Prisma.SlotGetPayload<{}>;
 
 export const adminAPI = createApi({
   reducerPath: "adminAPI",
@@ -125,6 +127,33 @@ export const adminAPI = createApi({
         body: data,
       }),
     }),
+    appnedSlotToZone: builder.mutation<
+      BaseSlot,
+      {
+        number: string;
+        description?: string;
+        maxCountPeople: number;
+        zoneId: number;
+      }
+    >({
+      query: (data) => ({
+        url: "/restaurant/slot",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    deleteSlotfromZone: builder.mutation<
+      BaseSlot,
+      {
+        id: number;
+      }
+    >({
+      query: (data) => ({
+        url: "/restaurant/slot",
+        method: "DELETE",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -137,5 +166,8 @@ export const {
   useUpDateAddressByIdMutation,
   useAppendKitchenToRestaurantMutation,
   useDeleteKitchenFromRestaurantMutation,
-  useDeleteWorkSheduleMutation,useAppendWorkSheduleToRestaurantMutation
+  useDeleteWorkSheduleMutation,
+  useAppendWorkSheduleToRestaurantMutation,
+  useAppnedSlotToZoneMutation,
+  useDeleteSlotfromZoneMutation,
 } = adminAPI;

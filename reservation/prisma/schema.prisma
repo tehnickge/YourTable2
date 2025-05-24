@@ -48,9 +48,9 @@ model Rent {
   rentStatus    String
   restaurant_fk Int
   amountPeople  Int
-  slot_fk       Int
+  slot_fk       Int?      
   restaurant    Restaurant @relation(fields: [restaurant_fk], references: [id])
-  slot          Slot       @relation(fields: [slot_fk], references: [id])
+  slot          Slot?      @relation(fields: [slot_fk], references: [id], onDelete: SetNull) 
   user          User       @relation(fields: [user_fk], references: [id])
 }
 
@@ -61,7 +61,7 @@ model Slot {
   number         String
   description    String?
   rents          Rent[]
-  zone           Zone    @relation(fields: [zone_fk], references: [id])
+  zone           Zone    @relation(fields: [zone_fk], references: [id], onDelete: Cascade) 
 }
 
 model Zone {

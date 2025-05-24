@@ -14,6 +14,7 @@ import {
 } from "@/redux/slices/searchRestaurantSlice/searchRestaurantAPI";
 import UpdateKitchens from "./components/Kitchens";
 import WorkShedule from "./components/WorkShedule";
+import ZonesWithSlots from "./components/ZonesWithSlots";
 
 const RestaurantAdminPage = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +39,7 @@ const RestaurantAdminPage = () => {
       <AddressInfo restaurant={restaurant} />
       <UpdateKitchens restaurant={restaurant} />
       <WorkShedule restaurant={restaurant} />
+      <ZonesWithSlots restaurant={restaurant} />
     </Grid2>
   );
 };

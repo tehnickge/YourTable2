@@ -24,6 +24,13 @@ export type AdminRestaurantState = {
     timeBegin: string;
     timeEnd: string;
   };
+
+  zonesWithSlots: {
+    activeZone: number;
+    maxPeopleAmount: number;
+    description: string;
+    slotNumber: string;
+  };
 };
 
 const initialState: AdminRestaurantState = {
@@ -81,6 +88,12 @@ const initialState: AdminRestaurantState = {
     timeBegin: "",
     timeEnd: "",
   },
+  zonesWithSlots: {
+    activeZone: 0,
+    maxPeopleAmount: 0,
+    description: "",
+    slotNumber: "",
+  },
 };
 
 const adminRestaurantSlice = createSlice({
@@ -136,6 +149,18 @@ const adminRestaurantSlice = createSlice({
     },
     setTimeEnd: (state, action: PayloadAction<string>) => {
       state.workShedule.timeEnd = action.payload;
+    },
+    setActiveZone: (state, action: PayloadAction<number>) => {
+      state.zonesWithSlots.activeZone = action.payload;
+    },
+    setSlotNumber: (state, action: PayloadAction<string>) => {
+      state.zonesWithSlots.slotNumber = action.payload;
+    },
+    setSlotDescriptionr: (state, action: PayloadAction<string>) => {
+      state.zonesWithSlots.description = action.payload;
+    },
+    setSlotMaxPeopleAmount: (state, action: PayloadAction<number>) => {
+      state.zonesWithSlots.maxPeopleAmount = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -226,6 +251,32 @@ const adminRestaurantSlice = createSlice({
             },
           };
         }
+      )
+      .addMatcher(
+        adminAPI.endpoints.appnedSlotToZone.matchFulfilled,
+        (state, action) => {
+          const zoneIndex = state.restaurant.zones.findIndex(
+            (zone) => zone.id === action.payload.zone_fk
+          );
+
+          state.restaurant.zones[zoneIndex].slots.push({
+            ...action.payload,
+            maxCountPeople: action.payload.maxCountPeople,
+            description: action.payload.description ?? "",
+          });
+        }
+      )
+      .addMatcher(
+        adminAPI.endpoints.deleteSlotfromZone.matchFulfilled,
+        (state, action) => {
+          const zoneIndex = state.restaurant.zones.findIndex(
+            (zone) => zone.id === action.payload.zone_fk
+          );
+
+          state.restaurant.zones[zoneIndex].slots = state.restaurant.zones[
+            zoneIndex
+          ].slots.filter((slot) => slot.id !== action.payload.id);
+        }
       );
   },
 });
@@ -247,5 +298,9 @@ export const {
   setSelectedDay,
   setTimeBegin,
   setTimeEnd,
+  setActiveZone,
+  setSlotDescriptionr,
+  setSlotNumber,
+  setSlotMaxPeopleAmount,
 } = adminRestaurantSlice.actions;
 export default adminRestaurantSlice.reducer;

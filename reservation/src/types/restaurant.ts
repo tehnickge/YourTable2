@@ -84,7 +84,7 @@ export type AdminRestaurant = {
     slots: {
       id: number;
       description: string;
-      maxCountPeople: string;
+      maxCountPeople: number;
       number: string;
     }[];
   }[];
