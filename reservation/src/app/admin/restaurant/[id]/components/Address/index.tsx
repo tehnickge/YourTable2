@@ -16,7 +16,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useMemo } from "react";
 
 interface AddressInfoProps {
   restaurant?: AdminRestaurant;
@@ -31,7 +30,13 @@ const AddressInfo: React.FC<AddressInfoProps> = ({ restaurant }) => {
   const handleUpdateRestaurantInformation = () => {
     if (restaurant) {
       const address = restaurant.address;
-      fetchUpdateAddress({ ...address });
+
+      fetchUpdateAddress({
+        id: address.id,
+        city: address.city,
+        coordinate: address.coordinate || undefined,
+        timezone: address.timezone || undefined,
+      });
     }
   };
 
