@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { IUserPayload } from "@/types/user";
 import { DateTime, Duration, Interval, Info, Settings } from "luxon";
 import { handleValidationError } from "../APIHelpers";
-import { IRentCreateSchema } from "@/types/rent";
+import { IRentCreateSchema, RentStatus } from "@/types/rent";
 
 // схема валидации данных
 const rentSchema: Yup.Schema<IRentCreateSchema> = Yup.object().shape({
@@ -82,6 +82,7 @@ const checkRentExist = async (
         { slot_fk: slotId },
         { timeStart: { lte: currentTimeEnd.toJSDate() } }, // Существующая аренда начинается до конца текущего интервала
         { timeEnd: { gte: currenTimeStart.toJSDate() } }, // Существующая аренда заканчивается после начала текущего интервала
+        { rentStatus: RentStatus.IN_WORK },
       ],
     },
   });
@@ -232,7 +233,7 @@ export const createRent = async (req: NextRequest) => {
         timeStart: timeStart.toJSDate(),
         timeEnd: timeEnd.toJSDate(),
         user: { connect: { id: validRent.userId } },
-        rentStatus: "in work",
+        rentStatus: RentStatus.IN_WORK,
         restaurant: { connect: { id: validRent.restaurantId } },
         amountPeople: validRent.amountPeople,
         slot: { connect: { id: validRent.slotId } },
