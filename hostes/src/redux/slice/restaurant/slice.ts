@@ -13,11 +13,11 @@ type RestaurantState = {
   notes: Note[];
   newNote: {
     name: string;
-    secondName?: string;
-    phoneNumber?: string;
+    secondName: string;
+    phoneNumber: string;
     comment: string;
     created: string;
-    rentDate?: string;
+    date: string;
   };
 };
 
@@ -37,9 +37,14 @@ const initialState: RestaurantState = {
     photos: [],
     zones: [],
   },
-  notes: {
-    newNotes: {},
-    notes: [],
+  notes: [],
+  newNote: {
+    name: "",
+    secondName: "",
+    phoneNumber: "",
+    comment: "",
+    created: "",
+    date: "",
   },
   selectedSlotId: null,
   rents: [],

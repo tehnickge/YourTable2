@@ -42,13 +42,14 @@ export type Rent = {
 };
 
 export type Note = {
-  restaurantId: number;
+  _id: string;
   name: string;
-  secondName?: string;
-  phoneNumber?: string;
+  secondName: string;
+  phoneNumber: string;
   comment: string;
   created: string;
-  rentDate?: string;
+  date: string;
+  restaurantId: number;
 };
 
 export const restaurantAPI = createApi({
@@ -72,6 +73,52 @@ export const restaurantAPI = createApi({
     }),
   }),
 });
+
+export const noteAPI = createApi({
+  reducerPath: "noteAPI",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://89.179.242.42:3001/api/",
+  }),
+  endpoints: (builder) => ({
+    addRecord: builder.mutation<
+      Note,
+      {
+        name: string;
+        secondName: string;
+        phoneNumber: string;
+        comment: string;
+        created: string;
+        date: string;
+        restaurantId: number;
+      }
+    >({
+      query: (data) => ({
+        url: `record`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getNoteByRestIdndDate: builder.query<
+      Note[],
+      { restaurantId: number; date: string }
+    >({
+      query: (data) => ({
+        url: `record?restaurantId=${data.restaurantId}&date=${data.date}`,
+        method: "GET",
+      }),
+    }),
+  }),
+});
+
+export const { useAddRecordMutation, useLazyGetNoteByRestIdndDateQuery } =
+  noteAPI;
+
+//  name: "Иван",
+//   secondName: "Петров",
+//   phoneNumber: "+79991234567",
+//   comment: "Бронирование на день рождения",
+//   date: "2025-05-25T19:00:00.000Z", // Время бронирования
+//   restaurantId: 1
 
 export const { useGetRestaurantMutation, useLazyGetRentsBySlotIdQuery } =
   restaurantAPI;

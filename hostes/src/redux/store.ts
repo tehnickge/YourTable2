@@ -8,13 +8,14 @@ import storage from "redux-persist/lib/storage"; // Импортируем local
 import sessionSlice from "./slice/session/slice";
 import restaurantSlice from "./slice/restaurant/slice";
 import { authAPI } from "./slice/session/api";
-import { restaurantAPI } from "./slice/restaurant/api";
+import { noteAPI, restaurantAPI } from "./slice/restaurant/api";
 // Комбинируем редюсеры
 const rootReducer = combineReducers({
   session: sessionSlice,
   resturant: restaurantSlice,
   [authAPI.reducerPath]: authAPI.reducer,
   [restaurantAPI.reducerPath]: restaurantAPI.reducer,
+  [noteAPI.reducerPath]: noteAPI.reducer,
 });
 
 // Конфиг для redux-persist
@@ -33,7 +34,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
       authAPI.middleware,
-      restaurantAPI.middleware
+      restaurantAPI.middleware,
+      noteAPI.middleware
     ),
 });
 
