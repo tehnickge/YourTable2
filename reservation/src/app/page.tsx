@@ -100,7 +100,7 @@ export default function Home() {
         />
       ))}
 
-      <div>TEST</div>
+      <div>Рекомендации</div>
       <Grid2
         container
         size={{ xs: 12 }}

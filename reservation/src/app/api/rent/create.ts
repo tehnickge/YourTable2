@@ -143,6 +143,7 @@ export const createRent = async (req: NextRequest) => {
         { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
+
     // проверка есть ли такой ресторан и в нем такой стол
     if (
       !(await slotAndRestaurantExist(validRent.restaurantId, validRent.slotId))
@@ -214,6 +215,7 @@ export const createRent = async (req: NextRequest) => {
       DateTime.fromJSDate(validRent.timeStart),
       DateTime.fromJSDate(validRent.timeEnd)
     );
+    
     if (!interval.isValid)
       return NextResponse.json(
         { error: ERROR_MESSAGES.BAD_ARGUMENTS + " Time begin < time end" },

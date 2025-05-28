@@ -5,8 +5,17 @@ import { TypedUseSelectorHook } from "react-redux";
 import { persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 import storage from "redux-persist/lib/storage"; // Импортируем localStorage
+import sessionSlice from "./slice/session/slice";
+import restaurantSlice from "./slice/restaurant/slice";
+import { authAPI } from "./slice/session/api";
+import { restaurantAPI } from "./slice/restaurant/api";
 // Комбинируем редюсеры
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  session: sessionSlice,
+  resturant: restaurantSlice,
+  [authAPI.reducerPath]: authAPI.reducer,
+  [restaurantAPI.reducerPath]: restaurantAPI.reducer,
+});
 
 // Конфиг для redux-persist
 const persistConfig = {
@@ -22,7 +31,10 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }).concat(),
+    getDefaultMiddleware({ serializableCheck: false }).concat(
+      authAPI.middleware,
+      restaurantAPI.middleware
+    ),
 });
 
 // Создаем persistor для обертывания приложения

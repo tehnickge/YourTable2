@@ -1,23 +1,23 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IRecord extends Document {
-  restaurantId: number;
   name: string;
   secondName: string;
   phoneNumber: string;
   comment: string;
   created: Date;
-  rentDate: Date;
+  date: Date;
+  restaurantId: number;
 }
 
 const RecordSchema = new Schema<IRecord>({
-  restaurantId: { type: Number, required: true },
   name: { type: String, required: true },
   secondName: { type: String, required: false },
-  phoneNumber: { type: String, required: true },
+  phoneNumber: { type: String, required: false },
   comment: { type: String, required: true },
-  created: { type: Date, required: false, default: Date.now },
-  rentDate: { type: Date, required: false },
+  created: { type: Date, default: Date.now },
+  date: { type: Date, required: true },
+  restaurantId: { type: Number, required: true }, // Добавлено
 });
 
 const RecordModel =

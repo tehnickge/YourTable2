@@ -36,6 +36,7 @@ const AddressInfo: React.FC<AddressInfoProps> = ({ restaurant }) => {
         city: address.city,
         coordinate: address.coordinate || undefined,
         timezone: address.timezone || undefined,
+        fullAddress: address.fullAddress || undefined,
       });
     }
   };

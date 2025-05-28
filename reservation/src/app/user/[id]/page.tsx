@@ -2,6 +2,7 @@
 import BaseGrid from "@/components/BaseGrid";
 import CardRent from "@/components/CardRent";
 import SmallHeader from "@/components/Header/SmallHeader";
+import { useAppSelector } from "@/redux/store";
 import { Avatar, Button, Card, Grid2, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { use } from "react";
@@ -111,6 +112,7 @@ const HISTORY = [
 const UserPage: React.FC<UserPageProps> = ({ params }) => {
   const router = useRouter();
   const { id } = use(params);
+  const { email, username } = useAppSelector((state) => state.user);
 
   return (
     <BaseGrid header={<SmallHeader />}>
@@ -133,8 +135,8 @@ const UserPage: React.FC<UserPageProps> = ({ params }) => {
           <Avatar variant="circular" />
           <hr className="w-full" />
           <Grid2 size={{ xs: 12 }}>
-            <Typography children={"ФИО:"} />
-            <Typography children={"Почта:"} />
+            <Typography children={`ФИО: ${username}`} />
+            <Typography children={`Почта: ${email}`} />
           </Grid2>
           <Grid2 container gap={1} direction="column">
             <Typography

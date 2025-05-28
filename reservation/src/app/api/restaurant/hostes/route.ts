@@ -4,7 +4,8 @@ import * as Yup from "yup";
 import jwt from "jsonwebtoken";
 import { IUserPayload } from "@/types/user";
 import { ERROR_MESSAGES, HTTP_STATUS } from "@/types/HTTPStauts";
-import { handleValidationError } from "../../APIHelpers";
+import { corsHeaders, handleValidationError } from "../../APIHelpers";
+import bcrypt from "bcryptjs";
 
 const hostesCreateSchema = Yup.object({
   login: Yup.string().required(),
@@ -112,6 +113,84 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json(
       { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
       { status: HTTP_STATUS.SERVER_ERROR }
+    );
+  }
+}
+
+const hostesAuthSchema = Yup.object().shape({
+  login: Yup.string().required("Login is required"),
+  password: Yup.string().required("Password is required"),
+});
+
+export async function GET(req: NextRequest) {
+  try {
+    // Получаем параметры из URL
+    const { searchParams } = new URL(req.url);
+    const loginParam = searchParams.get("login");
+    const passwordParam = searchParams.get("password");
+
+    // Валидация входных данных
+    const { login, password } = await hostesAuthSchema.validate(
+      { login: loginParam, password: passwordParam },
+      { abortEarly: false }
+    );
+
+    // Поиск хостес в базе данных
+    const hostes = await prisma.hostes.findUnique({
+      where: { login },
+      include: { restaurant: true },
+    });
+
+    if (!hostes) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " - Hostes not found" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    // Проверка пароля
+
+    if (password !== hostes.password) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.BAD_ARGUMENTS + " - Invalid password" },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
+
+    // Создание JWT токена
+    const payload = {
+      id: hostes.id,
+      login: hostes.login,
+      restaurantId: hostes.restaurant_fk,
+      type: "hostes", // Добавляем тип пользователя
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+      expiresIn: "1d",
+    });
+
+    // Формирование ответа
+    const response = NextResponse.json(payload, {
+      status: HTTP_STATUS.OK,
+      headers: corsHeaders,
+    });
+
+    // Установка токена в cookies
+    response.cookies.set("jwt_token", token, {
+      httpOnly: true,
+      path: "/",
+      maxAge: 86400, // 1 день
+    });
+
+    return response;
+  } catch (error) {
+    if (error instanceof Yup.ValidationError) {
+      return handleValidationError(error);
+    }
+    console.error("Hostes auth error:", error);
+    return NextResponse.json(
+      { error: ERROR_MESSAGES.UNEXPECTED_ERROR },
+      { status: HTTP_STATUS.SERVER_ERROR, headers: corsHeaders }
     );
   }
 }
