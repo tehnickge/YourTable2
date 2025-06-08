@@ -1,7 +1,9 @@
 "use client";
 import {
   Rent,
+  useDeleteRentByIdMutation,
   useLazyGetRentsBySlotIdQuery,
+  useUpdateRentByIdMutation,
 } from "@/redux/slice/restaurant/api";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { RentStatus } from "@/types";
@@ -34,11 +36,32 @@ const rentColor = ({ rentStatus, timeEnd }: Rent) => {
 const Rents = () => {
   const dispatch = useAppDispatch();
   const { selectedSlotId, rents } = useAppSelector((state) => state.resturant);
-  const [fetchRents] = useLazyGetRentsBySlotIdQuery();
+  const [fetchRents, { reset: refetchRents }] = useLazyGetRentsBySlotIdQuery();
+  const [fetchDeleteRent] = useDeleteRentByIdMutation();
+  const [fetchUpdateRent] = useUpdateRentByIdMutation();
 
+  const handleDeleteRent = (id: number) => () => {
+    fetchDeleteRent(id.toString());
+    if (selectedSlotId) fetchRents({ slotId: selectedSlotId });
+  };
+
+  const handleUpdateStatusRent = (rentId: number, status: string) => () => {
+    fetchUpdateRent({ rentId, status });
+    if (selectedSlotId) fetchRents({ slotId: selectedSlotId });
+  };
   useEffect(() => {
     if (selectedSlotId) fetchRents({ slotId: selectedSlotId });
   }, [selectedSlotId]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (selectedSlotId) {
+        fetchRents({ slotId: selectedSlotId });
+      }
+    }, 15000);
+
+    return () => clearInterval(intervalId);
+  }, [selectedSlotId, fetchRents]);
 
   return (
     <div className="p-4">
@@ -60,14 +83,7 @@ const Rents = () => {
               <Typography variant="body2" className="text-gray-600">
                 Кол-во человек: {rent.amountPeople}
               </Typography>
-              <Typography
-                variant="body2"
-                className={`mt-2 ${
-                  rent.rentStatus === RentStatus.IN_WORK
-                    ? "text-green-600"
-                    : "text-red-500 "
-                }`}
-              >
+              <Typography variant="body2" className={`mt-2 ${rentColor(rent)}`}>
                 Статус: {rent.rentStatus}
               </Typography>
               <Grid>
@@ -75,6 +91,7 @@ const Rents = () => {
                   size="small"
                   sx={{ padding: 0, margin: 0 }}
                   color="info"
+                  onClick={handleUpdateStatusRent(rent.id, RentStatus.CLOSED)}
                 >
                   завершить
                 </Button>
@@ -84,6 +101,7 @@ const Rents = () => {
                   size="small"
                   sx={{ padding: 0, margin: 0 }}
                   color="error"
+                  onClick={handleUpdateStatusRent(rent.id, RentStatus.ABORT)}
                 >
                   отменить
                 </Button>

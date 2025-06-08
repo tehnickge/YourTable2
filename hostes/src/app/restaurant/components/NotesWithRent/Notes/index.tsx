@@ -10,6 +10,7 @@ import {
 } from "@/redux/slice/restaurant/api";
 import { DateTime } from "luxon";
 import { useState } from "react";
+import { useAppSelector } from "@/redux/store";
 
 export default function NotesPage() {
   const [name, setName] = useState("");
@@ -17,19 +18,20 @@ export default function NotesPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [comment, setComment] = useState("");
   const [date, setDate] = useState<DateTime | null>(DateTime.now());
-  const [restaurantId] = useState(1); // можно динамически подтягивать из стора
+
+  const { restaurantId } = useAppSelector((state) => state.session);
 
   const [addRecord] = useAddRecordMutation();
   const [fetchNotes, { data: notes }] = useLazyGetNoteByRestIdndDateQuery();
-
+  if (!date || !restaurantId) return null;
   const handleAdd = async () => {
-    if (!date) return;
+    if (!date || !restaurantId) return;
     const payload = {
       name,
       secondName,
       phoneNumber,
       comment,
-      date: date.toISO()!, // .toISO() гарантирует string
+      date: date.toISO()!,
       created: new Date().toISOString(),
       restaurantId,
     };

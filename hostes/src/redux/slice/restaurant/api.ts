@@ -71,6 +71,19 @@ export const restaurantAPI = createApi({
         method: "GET",
       }),
     }),
+    updateRentById: builder.mutation<Rent, { rentId: number; status: string }>({
+      query: (data) => ({
+        url: `restaurant/hostes/rents`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    deleteRentById: builder.mutation<Rent, string>({
+      query: (rentId) => ({
+        url: `restaurant/hostes/rents?rentId=${rentId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -120,5 +133,9 @@ export const { useAddRecordMutation, useLazyGetNoteByRestIdndDateQuery } =
 //   date: "2025-05-25T19:00:00.000Z", // Время бронирования
 //   restaurantId: 1
 
-export const { useGetRestaurantMutation, useLazyGetRentsBySlotIdQuery } =
-  restaurantAPI;
+export const {
+  useGetRestaurantMutation,
+  useLazyGetRentsBySlotIdQuery,
+  useDeleteRentByIdMutation,
+  useUpdateRentByIdMutation,
+} = restaurantAPI;
